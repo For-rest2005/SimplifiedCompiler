@@ -11,7 +11,7 @@
 #define EMPTY 0
 #define KEYWORD 1
 #define IDENTIFIER 2
-#define NUMBER 3
+#define INTCONSTANT 3
 #define OPERATOR 4
 #define STRINGCONSTANT 5
 
@@ -21,8 +21,8 @@
 #define LETTER 4
 #define INVALID -1
 
-static std::unordered_set<std::string> theOperator = {"==","<=",">=",">>","<<","&&","||"};
-static std::unordered_set<std::string> theKeyword = {"if","else","while","var","print","input","def","return","break","continue"};
+static std::unordered_set<std::string> theOperator = {"==","<=",">=",">>","<<","&&","||","!="};
+static std::unordered_set<std::string> theKeyword = {"if","else","while","int","string","putchar","read","return","break","continue"};
 
 static int _charType[128] = {-1,-1,-1,-1,-1,-1,-1,-1,-1,2,2,2,2,2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,2,3,3,3,-1,3,3,3,3,3,3,3,3,3,-1,3,1,1,1,1,1,1,1,1,1,1,3,3,3,3,3,3,-1,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,-1,-1,-1,3,4,-1,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,3,3,3,3,-1};
 static std::unordered_map<char,char> charTrans = {{'n','\n'},{'\\','\\'},{'"','"'}};

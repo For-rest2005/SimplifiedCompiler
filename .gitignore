@@ -32,3 +32,6 @@
 *.app
 
 output/
+.vscode/
+build/
+tmp/

@@ -22,7 +22,7 @@ void Lexer::init(){
                 clearBuffer();
                 stringConstantTake();//buffer without '"'
                 continue;
-            }else if(currentType == IDENTIFIER || currentType == NUMBER){
+            }else if(currentType == IDENTIFIER || currentType == INTCONSTANT){
                 clearBuffer();
                 buffer.push_back(ch);
                 currentType = OPERATOR;
@@ -41,21 +41,21 @@ void Lexer::init(){
             }
             break;
         case DIGIT:
-            if(currentType == NUMBER || currentType == IDENTIFIER){
+            if(currentType == INTCONSTANT || currentType == IDENTIFIER){
                 buffer.push_back(ch);
             }
             else if(currentType == EMPTY){
                 buffer.push_back(ch);
-                currentType = NUMBER;
+                currentType = INTCONSTANT;
             }
             else if(currentType == OPERATOR){
                 clearBuffer();
                 buffer.push_back(ch);
-                currentType = NUMBER;
+                currentType = INTCONSTANT;
             }
             break;
         case LETTER:
-            if(currentType == NUMBER){
+            if(currentType == INTCONSTANT){
                 errorReport("Invalid identifier name");
             }
             else if(currentType == IDENTIFIER){
