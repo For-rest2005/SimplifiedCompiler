@@ -1,4 +1,4 @@
-#include "../src/Lexer.h"
+#include "../compsrc/Lexer.h"
 using namespace std;
 
 inline bool isdigit(char ch){ return ch >= 48 && ch <= 57;}
@@ -19,7 +19,7 @@ void print(int *tmp){
 int main(){
     for(int i = 0;i < 128;i++){
         if(i == ';'){
-            tmp1[i] = SEMICOLON;
+            tmp1[i] = CHARSEMICOLON;
         }
         else if(i >= 48 && i <= 57){
             tmp1[i] = DIGIT;
