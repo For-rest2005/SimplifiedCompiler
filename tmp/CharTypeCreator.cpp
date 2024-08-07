@@ -1,9 +1,9 @@
-#include "Lexer.h"
+#include "../src/Lexer.h"
 using namespace std;
 
 inline bool isdigit(char ch){ return ch >= 48 && ch <= 57;}
 inline bool ischaracter(char ch){return (ch >= 97 && ch <= 122) || (ch >= 65 &&  ch <= 90);}
-unordered_set<char> tbl = {'~','!','#','%','^','&','*','(',')','-','+','=','{','}','|',':','\'',':',';','"','<',',','>','?','/'}; 
+unordered_set<char> tbl = {'~','!','#','%','^','&','*','(',')','-','+','=','{','}','|',':','\'',':','"','<',',','>','?','/'}; 
 
 int tmp1[128],tmp2[128];
 
@@ -18,7 +18,10 @@ void print(int *tmp){
 
 int main(){
     for(int i = 0;i < 128;i++){
-        if(i >= 48 && i <= 57){
+        if(i == ';'){
+            tmp1[i] = SEMICOLON;
+        }
+        else if(i >= 48 && i <= 57){
             tmp1[i] = DIGIT;
             tmp2[i] = i-48+1;
         }

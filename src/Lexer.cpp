@@ -1,19 +1,31 @@
 #include "Lexer.h"
 #include "Shared.h"
 
-Token::Token(int _type,const std::string &_value):type(_type),value(_value){}
+Token::Token(int __type,const std::string &__value):_type(__type),_value(__value){}
 
-void Lexer::init(){
+const std::string Token::value(){return _value;}
+
+const int Token::type(){return _type;}
+
+bool Lexer::fetchToken(){
     char ch;
     while(true){
+        if(checkBit){
+            checkBit = 0;
+            return 1;
+        }
         ch = getchar();
         if(ch == EOF){
             clearBuffer();
-            break;
+            return 0;
         }
-        // std::cerr << ch << ' ' << charTypeGet(ch) << ' ' << currentType << ' ' << buffer << std::endl;
         switch (charTypeGet(ch))
         {
+        case CHARSEMICOLON:
+            clearBuffer();
+            buffer.push_back(ch);
+            currentType = SEMICOLON;
+            break;
         case SPACE:
             clearBuffer();
             break;
@@ -29,7 +41,7 @@ void Lexer::init(){
             }else if(currentType == EMPTY){
                 buffer.push_back(ch);
                 currentType = OPERATOR;
-            }else if(currentType == OPERATOR){
+            }else if(currentType == OPERATOR || currentType == SEMICOLON){
                 if(theOperator.find(buffer+ch) != theOperator.end()){
                     buffer.push_back(ch);
                     clearBuffer();
@@ -48,7 +60,7 @@ void Lexer::init(){
                 buffer.push_back(ch);
                 currentType = INTCONSTANT;
             }
-            else if(currentType == OPERATOR){
+            else if(currentType == OPERATOR || currentType == SEMICOLON){
                 clearBuffer();
                 buffer.push_back(ch);
                 currentType = INTCONSTANT;
@@ -60,7 +72,7 @@ void Lexer::init(){
             }
             else if(currentType == IDENTIFIER){
                 buffer.push_back(ch);
-            }else if(currentType == OPERATOR){
+            }else if(currentType == OPERATOR || currentType == SEMICOLON){
                 clearBuffer();
                 buffer.push_back(ch);
                 currentType = IDENTIFIER;
@@ -77,11 +89,12 @@ void Lexer::init(){
 }
 
 void Lexer::clearBuffer(){
-    if(buffer.empty()) return ;
+    if(currentType == EMPTY) return ;
     if(currentType == IDENTIFIER && theKeyword.find(buffer) != theKeyword.end())
-        data.push_back(Token(KEYWORD,buffer));
+        curToken = Token(KEYWORD,buffer);
     else
-        data.push_back(Token(currentType,buffer));
+        curToken = Token(currentType,buffer);
+    checkBit = 1;
     buffer.clear();
     currentType = EMPTY;
 }
@@ -101,6 +114,8 @@ void Lexer::stringConstantTake(){
             break;
         buffer.push_back(ch);
     }
-    clearBuffer();;
+    clearBuffer();
 }
+
+Lexer::Lexer():curToken(0,""),currentType(EMPTY),checkBit(0),buffer(""){}
 

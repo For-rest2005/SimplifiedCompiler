@@ -9,6 +9,7 @@
 #define INTCONSTANT 3
 #define OPERATOR 4
 #define STRINGCONSTANT 5
+#define SEMICOLON 6
 
 inline void errorReport(const std::string& errorData){
     std::cerr << "ERROR:" << errorData << std::endl;

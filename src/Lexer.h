@@ -19,12 +19,13 @@
 #define SPACE 2
 #define SYMBOL 3
 #define LETTER 4
+#define CHARSEMICOLON 5
 #define INVALID -1
 
 static std::unordered_set<std::string> theOperator = {"==","<=",">=",">>","<<","&&","||","!="};
 static std::unordered_set<std::string> theKeyword = {"if","else","while","int","string","putchar","read","return","break","continue"};
 
-static int _charType[128] = {-1,-1,-1,-1,-1,-1,-1,-1,-1,2,2,2,2,2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,2,3,3,3,-1,3,3,3,3,3,3,3,3,3,-1,3,1,1,1,1,1,1,1,1,1,1,3,3,3,3,3,3,-1,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,-1,-1,-1,3,4,-1,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,3,3,3,3,-1};
+static int _charType[128] = {-1,-1,-1,-1,-1,-1,-1,-1,-1,2,2,2,2,2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,2,3,3,3,-1,3,3,3,3,3,3,3,3,3,-1,3,1,1,1,1,1,1,1,1,1,1,3,5,3,3,3,3,-1,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,-1,-1,-1,3,4,-1,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,3,3,3,3,-1};
 static std::unordered_map<char,char> charTrans = {{'n','\n'},{'\\','\\'},{'"','"'}};
 
 inline int charTypeGet(char ch){return _charType[int(ch)];}
@@ -32,26 +33,28 @@ inline int charTypeGet(char ch){return _charType[int(ch)];}
 
 
 class Token{
+private:
+    int _type;
+    std::string _value;
 public:
     Token(int,const std::string&);
-    int type;
-    std::string value;
+    Token() = default;
+    const int type();
+    const std::string value();
 };
 
 class Lexer{
 private:
     std::string buffer;
-    int currentType = 0;//Using enum type here is safer
+    int currentType;//Using enum type here is safer
+    bool checkBit;
 
     void clearBuffer();
-    inline void lexerErrorReport(const std::string& errorData){  
-        std::cerr << "ERROR:" << errorData << std::endl;
-        exit(1);
-    }
     void stringConstantTake();
 public:
-    void init();
-    std::vector<Token> data;
+    Lexer();
+    bool fetchToken();
+    Token curToken;
 };
 
 #endif
