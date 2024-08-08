@@ -3,9 +3,8 @@
 
 #include<string>
 class ASTNode{
-protected:
-    std::string assemblyCode;
 public:
+    std::string _assemblyCode;
     virtual ~ASTNode() = 0;
     ASTNode() = default;
     virtual void codeGenerate();

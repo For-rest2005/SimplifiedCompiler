@@ -1,5 +1,7 @@
-//#ifndef _COMMAND_H_
-//#define _COMMAND_H_
+/*
+This source file implement the virtual machine
+*/
+
 #include<vector>
 #include<functional>
 #include<map>
