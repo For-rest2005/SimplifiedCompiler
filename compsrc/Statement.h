@@ -1,37 +1,41 @@
 #ifndef _STATEMENT_H_
 #define _STATEMENT_H_
-#include"ASTNode.h"
+#include "Shared.h"
 class Statement:public ASTNode{
 protected:
     Statement *next;
 public:
+    Statement(Statement*);
     virtual ~Statement();
 };
 
 class WhileLoop:public Statement{
 protected:
-
+    Statement *statement;
+    Expression *condition;
 public:
 
 };
 
 
-class If:public Statement{
+class IfCondition:public Statement{
 protected:
-
+    Statement *Statement1,*statement2;
+    Expression *condition;
 public:
 
 };
 
 
-class GlobalInt:public Statement{
+class GlobalVarDefinition:public Statement{
 protected:
-
+    Token key;
+    std::vector<>
 public:
 
 };
 
-class LocalInt:public Statement{
+class LocalVarDefinition:public Statement{
 protected:
 
 public:
@@ -63,7 +67,6 @@ class ExpressionStatement:public Statement{
 protected:
 
 public:
-
+//remember to reset Statement addrIndex
 };
-
 #endif

@@ -1,5 +1,4 @@
 #include "Lexer.h"
-#include "Shared.h"
 
 Token::Token(int __type,const std::string &__value):_type(__type),_value(__value){}
 

@@ -1,12 +1,9 @@
 #ifndef _LEXER_H_
 #define _LEXER_H_
 
-#include<string>
-#include<vector>
-#include<unordered_set>
-#include<unordered_map>
-#include<ctype.h>
-#include<iostream>
+#include "Shared.h"
+#include <unordered_set>
+#include <string>
 
 #define EMPTY 0
 #define KEYWORD 1
@@ -22,7 +19,7 @@
 #define CHARSEMICOLON 5
 #define INVALID -1
 
-static std::unordered_set<std::string> theOperator = {"==","<=",">=",">>","<<","&&","||","!="};
+static std::unordered_set<std::string> theOperator = {"==","<=",">=","&&","||"};
 static std::unordered_set<std::string> theKeyword = {"if","else","while","int","string","putchar","read","return","break","continue"};
 
 static int _charType[128] = {-1,-1,-1,-1,-1,-1,-1,-1,-1,2,2,2,2,2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,2,3,3,3,-1,3,3,3,3,3,3,3,3,3,-1,3,1,1,1,1,1,1,1,1,1,1,3,5,3,3,3,3,-1,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,-1,-1,-1,3,4,-1,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,3,3,3,3,-1};
