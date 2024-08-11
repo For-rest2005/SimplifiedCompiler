@@ -1,6 +1,8 @@
 #ifndef _SYMBOLTABLE_H_
 #define _SYMBOLTABLE_H_
 #include "Shared.h"
+#include <vector>
+#include <unordered_map>
 
 class LocalVarTable{
 private:

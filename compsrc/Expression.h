@@ -2,6 +2,7 @@
 #define _EXPRESSION_H_
 #include "Shared.h"
 #include <unordered_map>
+#include <functional>
 
 class Expression:public ASTNode{
 protected:
@@ -43,21 +44,21 @@ public:
 
 class UnaryOp:public OperationExp{
     Expression *first;
-    static std::unordered_map<std::string,std::function<int(Expression*)>> functionTable;
+    // static std::unordered_map<std::string,std::function<int(Expression*)>> functionTable;
 public:
     // virtual void codeGenerate(VarTable&,FunctionTable&) override{}
 };
 
 class binaryOp:public OperationExp{
     Expression *first,*second;
-    static std::unordered_map<std::string,std::function<int(Expression*)>> functionTable;
+    // static std::unordered_map<std::string,std::function<int(Expression*)>> functionTable;
 public:
     // virtual void codeGenerate(VarTable&,FunctionTable&) override{}
 };
 
 class ternaryOp:public OperationExp{
     Expression *first,*second,*third;
-    static std::unordered_map<std::string,std::function<int(Expression*)>> functionTable;
+    // static std::unordered_map<std::string,std::function<int(Expression*)>> functionTable;
 public:
     // virtual void codeGenerate(VarTable&,FunctionTable&) override{}
 };

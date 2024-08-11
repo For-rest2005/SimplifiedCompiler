@@ -1,106 +1,32 @@
 #include "Lexer.h"
+#include "Shared.h"
+
+static std::unordered_set<std::string> theOperator = {"==","<=",">=","&&","||"};
+static std::unordered_set<std::string> theKeyword = {"if","else","while","int","string","putchar","read","return","break","continue"};
+static int _charType[128] = {-1,-1,-1,-1,-1,-1,-1,-1,-1,2,2,2,2,2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,2,3,3,3,-1,3,3,3,3,3,3,3,3,3,-1,3,1,1,1,1,1,1,1,1,1,1,3,3,3,3,3,3,-1,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,-1,-1,-1,3,4,-1,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,3,3,3,3,-1};
+inline int charTypeGet(char ch){return _charType[int(ch)];}
+
+#define DIGIT 1
+#define SPACE 2
+#define SYMBOL 3
+#define LETTER 4
+#define INVALID -1
 
 Token::Token(int __type,const std::string &__value):_type(__type),_value(__value){}
-
 const std::string Token::value(){return _value;}
-
 const int Token::type(){return _type;}
-
-bool Lexer::fetchToken(){
-    char ch;
-    while(true){
-        if(checkBit){
-            checkBit = 0;
-            return 1;
-        }
-        ch = getchar();
-        if(ch == EOF){
-            clearBuffer();
-            return 0;
-        }
-        switch (charTypeGet(ch))
-        {
-        case CHARSEMICOLON:
-            clearBuffer();
-            buffer.push_back(ch);
-            currentType = SEMICOLON;
-            break;
-        case SPACE:
-            clearBuffer();
-            break;
-        case SYMBOL:
-            if(ch == '"'){
-                clearBuffer();
-                stringConstantTake();//buffer without '"'
-                continue;
-            }else if(currentType == IDENTIFIER || currentType == INTCONSTANT){
-                clearBuffer();
-                buffer.push_back(ch);
-                currentType = OPERATOR;
-            }else if(currentType == EMPTY){
-                buffer.push_back(ch);
-                currentType = OPERATOR;
-            }else if(currentType == OPERATOR || currentType == SEMICOLON){
-                if(theOperator.find(buffer+ch) != theOperator.end()){
-                    buffer.push_back(ch);
-                    clearBuffer();
-                }else{
-                    clearBuffer();
-                    buffer.push_back(ch);
-                    currentType = OPERATOR;
-                }
-            }
-            break;
-        case DIGIT:
-            if(currentType == INTCONSTANT || currentType == IDENTIFIER){
-                buffer.push_back(ch);
-            }
-            else if(currentType == EMPTY){
-                buffer.push_back(ch);
-                currentType = INTCONSTANT;
-            }
-            else if(currentType == OPERATOR || currentType == SEMICOLON){
-                clearBuffer();
-                buffer.push_back(ch);
-                currentType = INTCONSTANT;
-            }
-            break;
-        case LETTER:
-            if(currentType == INTCONSTANT){
-                errorReport("Invalid identifier name");
-            }
-            else if(currentType == IDENTIFIER){
-                buffer.push_back(ch);
-            }else if(currentType == OPERATOR || currentType == SEMICOLON){
-                clearBuffer();
-                buffer.push_back(ch);
-                currentType = IDENTIFIER;
-            }else if(currentType == EMPTY){
-                buffer.push_back(ch);
-                currentType = IDENTIFIER;
-            }
-            break;
-        case INVALID:
-            errorReport("Invalid character");
-            break;
-        }
-    }
+int Token::toInteger(){
+    if(_type != INTCONSTANT) errorReport("Invalid integer");
+    int cnt = 0;
+    for(int i = (int)_value.size()-1,tmp = 1;i >= 0;i--,tmp = tmp*10)
+        cnt += tmp*(_value[i]-'0');
+    return cnt;
 }
 
-void Lexer::clearBuffer(){
-    if(currentType == EMPTY) return ;
-    if(currentType == IDENTIFIER && theKeyword.find(buffer) != theKeyword.end())
-        curToken = Token(KEYWORD,buffer);
-    else
-        curToken = Token(currentType,buffer);
-    checkBit = 1;
-    buffer.clear();
-    currentType = EMPTY;
-}
-
-void Lexer::stringConstantTake(){
-    currentType = STRINGCONSTANT;
+Token getStringConstant(){
+    static std::unordered_map<char,char> charTrans = {{'n','\n'},{'\\','\\'},{'"','"'}};
     char ch;
+    std::string buffer;
     while(true){
         ch = getchar();
         if(ch == EOF) errorReport("Incomplete string");
@@ -113,8 +39,76 @@ void Lexer::stringConstantTake(){
             break;
         buffer.push_back(ch);
     }
-    clearBuffer();
+    return Token(STRINGCONSTANT,buffer);
+}
+Token& Token::operator=(const Token& obj){
+    _value = obj._value;
+    _type = obj._type;
 }
 
-Lexer::Lexer():curToken(0,""),currentType(EMPTY),checkBit(0),buffer(""){}
+static std::stack<Token> getTokenBuffer;
 
+Token getToken(){
+    if(!getTokenBuffer.empty()){
+        Token top = getTokenBuffer.top();
+        getTokenBuffer.pop();
+        return top;
+    }
+    char ch;
+    int type;
+    std::string buffer;
+    ch = getchar();
+    while(charTypeGet(ch) == SPACE)
+        ch = getchar();
+    if(ch == EOF) return Token(ENDPOINT,"");
+    if(ch == '"') return getStringConstant();
+    if(ch == ';') return Token(SEMICOLON,";");
+    buffer.push_back(ch);
+    if(charTypeGet(ch) == DIGIT){
+        type = INTCONSTANT;
+        while(true){
+            ch = getchar();
+            if(charTypeGet(ch) == LETTER){
+                errorReport("Invalid integer");
+            }else if(charTypeGet(ch) == SYMBOL || charTypeGet(ch) == SPACE){
+                ungetc(ch,stdin);
+                type = INTCONSTANT;
+                break;
+            }
+            buffer.push_back(ch);
+        }
+    }
+    else if(charTypeGet(ch) == LETTER){
+        while(true){
+            ch = getchar();
+            if(charTypeGet(ch) == SYMBOL || charTypeGet(ch) == SPACE){
+                ungetc(ch,stdin);
+                if(theKeyword.find(buffer) != theKeyword.end())
+                    type = KEYWORD;
+                else
+                    type = IDENTIFIER;
+                break;
+            }
+            buffer.push_back(ch);
+        }
+    }else if(charTypeGet(ch) == SYMBOL){
+        type = OPERATOR;
+        ch = getchar();
+        if(theOperator.find(buffer+ch) != theOperator.end()){
+            buffer.push_back(ch);
+        }else{
+            ungetc(ch,stdin);
+        }
+    }else if(charTypeGet(ch) == INVALID){
+        errorReport("Invalid character");
+    }
+    return Token(type,buffer);
+}
+
+void skipTokens(int n = 1){
+    while(n--) getToken();
+}
+
+void unGetToken(const Token &obj){
+    getTokenBuffer.push(obj);
+}

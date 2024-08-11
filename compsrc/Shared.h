@@ -1,11 +1,7 @@
 #ifndef _SHARED_H_
 #define _SHARED_H_
-#include "ASTNode.h"
-#include "Expression.h"
 #include "Lexer.h"
-#include "Parser.h"
-#include "Statement.h"
-#include "SymbolTable.h"
+#include "ASTNode.h"
 #include <stack>
 #include <string>
 #include <vector>
@@ -24,8 +20,9 @@
 
 #define ERRORTYPE -1
 #define VOID 0
-#define INTEGER 1
-#define INTERGERARRAY 2
+#define INT 1
+#define INTARRAY 2
+#define INTPOINTER 3
 
 inline void errorReport(const std::string& errorData){
     std::cerr << "ERROR:" << errorData << std::endl;

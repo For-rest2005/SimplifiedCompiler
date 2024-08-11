@@ -11,23 +11,9 @@
 #define INTCONSTANT 3
 #define OPERATOR 4
 #define STRINGCONSTANT 5
+#define ENDPOINT -1
 
-#define DIGIT 1
-#define SPACE 2
-#define SYMBOL 3
-#define LETTER 4
-#define CHARSEMICOLON 5
-#define INVALID -1
-
-static std::unordered_set<std::string> theOperator = {"==","<=",">=","&&","||"};
-static std::unordered_set<std::string> theKeyword = {"if","else","while","int","string","putchar","read","return","break","continue"};
-
-static int _charType[128] = {-1,-1,-1,-1,-1,-1,-1,-1,-1,2,2,2,2,2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,2,3,3,3,-1,3,3,3,3,3,3,3,3,3,-1,3,1,1,1,1,1,1,1,1,1,1,3,5,3,3,3,3,-1,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,-1,-1,-1,3,4,-1,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,3,3,3,3,-1};
-static std::unordered_map<char,char> charTrans = {{'n','\n'},{'\\','\\'},{'"','"'}};
-
-inline int charTypeGet(char ch){return _charType[int(ch)];}
 // inline int charTrans(char ch){return _charTrans[int(ch)];}
-
 
 class Token{
 private:
@@ -36,22 +22,14 @@ private:
 public:
     Token(int,const std::string&);
     Token() = default;
+    int toInteger();
+    Token &operator=(const Token&);
     const int type();
     const std::string value();
 };
 
-class Lexer{
-private:
-    std::string buffer;
-    int currentType;//Using enum type here is safer
-    bool checkBit;
-
-    void clearBuffer();
-    void stringConstantTake();
-public:
-    Lexer();
-    bool fetchToken();
-    Token curToken;
-};
+Token getToken();
+void skipTokens(int n = 1);
+void unGetToken(const Token&);
 
 #endif

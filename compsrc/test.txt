@@ -1,0 +1,12 @@
+int global = 1;
+
+void printf();
+
+int main(){
+    string s = "Hello World\n";
+    printf(s);
+    cout <= 1;
+    if(s == 1)
+        printf(s);
+    return 1;
+}
