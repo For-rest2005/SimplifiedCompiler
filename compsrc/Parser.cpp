@@ -65,33 +65,29 @@ Statement* getStatementGlobal(){
     return curStatement;
 }
 
-void getExp(std::vector<Token> &condition,const std::string& _str){
-    Token curToken;
-    skipTokens();
-    while((curToken=getToken()).value() != _str)
-        condition.push_back(curToken);
-}
-
 Statement* getStatementLocal(){
     Token keyword = getToken();
     std::string _str = keyword.value();
     Statement *curStatement;
+    Expression *exp;
     Token bufferToken;
     if(_str == "while"){
-        std::vector<Token> condition;
-        getExp(condition,")");
-        curStatement = new WhileLoop(parserExp(condition,0,(int)condition.size()-1),getStatementLocal());
+        skipTokens();
+        exp = parseExp1();
+        skipTokens();
+        curStatement = new WhileLoop(exp,getStatementLocal());
     }
     else if(_str == "if"){
-        std::vector<Token> condition;
-        getExp(condition,")");
+        skipTokens();
+        exp = parseExp1();
+        skipTokens();
         curStatement = getStatementLocal();
         bufferToken = getToken();
         if(bufferToken.value() == "else")
-            curStatement = new IfCondition(parserExp(condition,0,(int)condition.size()-1),curStatement,getStatementLocal());
+            curStatement = new IfCondition(exp,curStatement,getStatementLocal());
         else{
             unGetToken(bufferToken);
-            curStatement = new IfCondition(parserExp(condition,0,(int)condition.size()-1),curStatement,nullptr);
+            curStatement = new IfCondition(exp,curStatement,nullptr);
         }
     }
     else if(_str == "{"){
@@ -106,12 +102,57 @@ Statement* getStatementLocal(){
     else if(typeIndicator.find(_str) != typeIndicator.end()){
         unGetToken(keyword);
         int dataType = getDataType();
-        
+        Token name = getToken();
+        Token op = getToken();
+        if(op.value() == ";"){
+            curStatement = new LocalVarDeclaration(dataType,name.value());
+        }
+        else if(op.value() == "["){
+            int _size = getToken().toInteger();
+            skipTokens(2);
+            curStatement = new LocalArrayDeclaration(dataType,name.value(),_size);
+        }
     }
     else{
-        std::vector<Token> exp;
-        getExp(exp,";");
-        curStatement = new ExpStatement(parserExp(exp,1,(int)exp.size()-1));
+        exp = parseExp1();
+        skipTokens();
+        curStatement = new ExpStatement(exp);
     }
     return curStatement;
+}
+
+binaryParse::binaryParse(const std::vector<std::string> &_op,std::function<Expression*()> _next):op(_op),next(_next){}
+bool binaryParse::checkOp(std::string _str){
+    for(auto obj:op)
+        if(_str == obj) return 1;
+    return 0;
+}
+Expression* binaryParse::operator()(){
+    Expression *first,*second;
+    first = next();
+    Token buffer = getToken();
+    if(checkOp(buffer.value())){
+        second = operator()();
+        return new BinaryOp(first,second,buffer.value());
+    }
+    return first;
+}
+const std::function<Expression*()> parseExp1 = binaryParse({","},parseExp2());
+const std::function<Expression*()> parseExp2();
+Expression* parseExp3();
+Expression* parseExp4();
+Expression* parseExp5();
+Expression* parseExp6();
+Expression* parseExp7();
+Expression* parseExp8();
+Expression* parseExp9();
+Expression* parseExp10();
+Expression* parseExp11();
+Expression* parseExp12();
+Expression* parseExp13();
+Expression* parseExp14();
+Expression* parseExp15();
+Expression* parseExp16();
+Expression *parseExp(){
+    return parseExp1();
 }

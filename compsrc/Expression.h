@@ -38,27 +38,30 @@ public:
 };
 
 class OperationExp:public Expression{
+protected:
+    std::string op;
 public:
-    std::string opType;
+    OperationExp(const std::string&);
 };
 
 class UnaryOp:public OperationExp{
     Expression *first;
-    // static std::unordered_map<std::string,std::function<int(Expression*)>> functionTable;
+    static std::unordered_map<std::string,std::function<int(Expression*)>> functionTable;
 public:
     // virtual void codeGenerate(VarTable&,FunctionTable&) override{}
 };
 
-class binaryOp:public OperationExp{
+class BinaryOp:public OperationExp{
     Expression *first,*second;
-    // static std::unordered_map<std::string,std::function<int(Expression*)>> functionTable;
+    static std::unordered_map<std::string,std::function<int(Expression*)>> functionTable;
 public:
+    BinaryOp(Expression*,Expression*,const std::string&);
     // virtual void codeGenerate(VarTable&,FunctionTable&) override{}
 };
 
-class ternaryOp:public OperationExp{
+class TernaryOp:public OperationExp{
     Expression *first,*second,*third;
-    // static std::unordered_map<std::string,std::function<int(Expression*)>> functionTable;
+    static std::unordered_map<std::string,std::function<int(Expression*)>> functionTable;
 public:
     // virtual void codeGenerate(VarTable&,FunctionTable&) override{}
 };

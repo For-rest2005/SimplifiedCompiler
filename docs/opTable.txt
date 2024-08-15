@@ -1,0 +1,22 @@
+three kinds of type:
+    int,int*(int pointer),void
+binary:
+    exp,exp
+    int = int,(*int) = (*int),(*int) = (STRINGCONSTANT),int = (INTCONSTANT)
+ternary:
+    int?int:int,int?(int*):(int*),(int?void:void)
+    int || int
+    int && int
+    int | int
+    int ^ int 
+    int & int
+    int == int,int != int
+    int < int,int <= int,int > int,int >= int
+    int << int,int >> int
+    int + int,int - int,(*int)+int,int+(int*)
+    int * int,int / int,int % int
+unary:
+    !int
+    -int
+    *(int*)
+    function,constant,varible

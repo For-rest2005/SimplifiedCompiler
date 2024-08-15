@@ -1,6 +1,5 @@
 #include"Expression.h"
 
-void ConstantExp::codeGenerate(VarTable &_var,FunctionTable &_fun){
-    tmpMemAddr = addrIndex++;
-    ascode = "0 "+ 
-}
+OperationExp::OperationExp(const std::string &_op):op(_op){}
+
+BinaryOp::BinaryOp(Expression *_first,Expression *_second,const std::string &_op):first(_first),second(_second),OperationExp(_op){}

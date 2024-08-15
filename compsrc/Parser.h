@@ -8,7 +8,16 @@
 Statement* parser();
 Statement* getStatementGlobal();
 Statement* getStatementLocal();
-Expression* parserExp(std::vector<Token> &exp,int l, int r);
+
+class binaryParse{
+private:
+    std::function<Expression*()> next;
+    std::vector<std::string> op;
+public:
+    binaryParse(const std::vector<std::string>&,std::function<Expression*()>);
+    bool checkOp(std::string);
+    Expression *operator()();
+};
 
 
 #endif

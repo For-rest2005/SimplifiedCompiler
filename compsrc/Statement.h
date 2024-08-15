@@ -5,7 +5,7 @@
 #include <vector>
 class Statement:public ASTNode{
 public:
-    virtual ~Statement();
+    virtual ~Statement() = 0;
 };
 
 class WhileLoop:public Statement{
@@ -34,7 +34,7 @@ protected:
     std::string varName;
 public:
     GlobalVarDeclaration(int,std::string,Statement*);
-    ~GlobalVarDeclaration();
+    virtual ~GlobalVarDeclaration();
 };
 
 class GlobalArrayDeclaration:public Statement{
@@ -45,7 +45,7 @@ protected:
     unsigned int size;
 public:
     GlobalArrayDeclaration(int,std::string,unsigned int,Statement*);
-    ~GlobalArrayDeclaration();
+    virtual ~GlobalArrayDeclaration();
 };
 
 class LocalVarDeclaration:public Statement{
@@ -53,16 +53,17 @@ protected:
     int dataType;
     std::string varName;
 public:
-
+    LocalVarDeclaration(int,std::string);
+    virtual ~LocalVarDeclaration();
 };
 
 class LocalArrayDeclaration:public Statement{
 protected:
     int dataType;
     std::string varName;
-    unsigned int _size;
+    unsigned int size;
 public:
-
+    LocalArrayDeclaration(int,std::string,unsigned int)
 };
 
 class FunctionDefinition:public Statement{
@@ -74,7 +75,7 @@ protected:
     Statement *next;
 public:
     FunctionDefinition(int,std::string,std::vector<std::pair<int,std::string>>&,Statement*,Statement*);
-    ~FunctionDefinition();
+    virtual ~FunctionDefinition();
 };
 
 class FunctionDeclaration:public Statement{
@@ -85,7 +86,7 @@ protected:
     Statement *next;
 public:
     FunctionDeclaration(int,std::string,std::vector<std::pair<int,std::string>>&,Statement*);
-    ~FunctionDeclaration();
+    virtual ~FunctionDeclaration();
 };
 
 class Scope:public Statement{
@@ -94,7 +95,7 @@ protected:
 public:
     Scope() = default;
     void push(Statement*);
-    ~Scope();
+    virtual ~Scope();
 };
 
 class ExpStatement:public Statement{
@@ -102,7 +103,7 @@ protected:
     Expression *body;
 public:
     ExpStatement(Expression*);
-    ~ExpStatement();
+    virtual ~ExpStatement();
 //remember to reset Statement addrIndex
 };
 #endif
