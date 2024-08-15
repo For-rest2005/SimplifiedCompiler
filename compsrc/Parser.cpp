@@ -38,12 +38,9 @@ Statement* getStatementGlobal(){
         std::vector<std::pair<int,std::string>> typeNameList;
         int argVarType;
         while(true){
-            argVarType = getDataType();
-            if(argVarType == -2){
-                if(getToken().value() != ")")
-                    errorReport("Mismatch parenthese");
+            if(getToken().value() == ")")
                 break;
-            }
+            argVarType = getDataType();
             Token varName;
             varName = getToken();
             if(varName.type() != IDENTIFIER)
@@ -55,13 +52,13 @@ Statement* getStatementGlobal(){
             unGetToken(op);
             Statement *body = getStatementLocal();
             curStatement = new FunctionDefinition(dataType,name.value(),typeNameList,body,getStatementGlobal());
-        }else if(op.type() == SEMICOLON){
+        }else if(op.value() == ";"){
             curStatement = new FunctionDeclaration(dataType,name.value(),typeNameList,getStatementGlobal());
         }else{
             errorReport("Error function definition");
         }
     }
-    else errorReport("Error declaration");
+    else errorReport("Error function declaration or definition");
     return curStatement;
 }
 
@@ -73,13 +70,13 @@ Statement* getStatementLocal(){
     Token bufferToken;
     if(_str == "while"){
         skipTokens();
-        exp = parseExp1();
+        exp = parseExp();
         skipTokens();
         curStatement = new WhileLoop(exp,getStatementLocal());
     }
     else if(_str == "if"){
         skipTokens();
-        exp = parseExp1();
+        exp = parseExp();
         skipTokens();
         curStatement = getStatementLocal();
         bufferToken = getToken();
@@ -114,7 +111,7 @@ Statement* getStatementLocal(){
         }
     }
     else{
-        exp = parseExp1();
+        exp = parseExp();
         skipTokens();
         curStatement = new ExpStatement(exp);
     }
@@ -128,31 +125,45 @@ bool binaryParse::checkOp(std::string _str){
     return 0;
 }
 Expression* binaryParse::operator()(){
-    Expression *first,*second;
+    Expression *first;
     first = next();
     Token buffer = getToken();
     if(checkOp(buffer.value())){
-        second = operator()();
+        Expression *second = operator()();
         return new BinaryOp(first,second,buffer.value());
     }
     return first;
 }
-const std::function<Expression*()> parseExp1 = binaryParse({","},parseExp2());
-const std::function<Expression*()> parseExp2();
-Expression* parseExp3();
-Expression* parseExp4();
-Expression* parseExp5();
-Expression* parseExp6();
-Expression* parseExp7();
-Expression* parseExp8();
-Expression* parseExp9();
-Expression* parseExp10();
-Expression* parseExp11();
-Expression* parseExp12();
-Expression* parseExp13();
-Expression* parseExp14();
-Expression* parseExp15();
-Expression* parseExp16();
-Expression *parseExp(){
-    return parseExp1();
+
+Expression* _parseExp3(){
+    Expression *first = parseExp4();
+    Token buffer1 = getToken();
+    if(buffer1.value() == "?"){
+        Expression *second = _parseExp3();
+        Token buffer2 = getToken();
+        if(buffer2.value() != ":") errorReport(":?operator error");
+        Expression *third = parseExp4();
+        return new TernaryOp(first,second,third,"?:");
+    }
+    return first;
 }
+
+const std::function<Expression*()> parseExp1 = binaryParse({","},parseExp2);
+const std::function<Expression*()> parseExp2 = binaryParse({"="},parseExp3);
+const std::function<Expression*()> parseExp3 = _parseExp3;
+const std::function<Expression*()> parseExp4;
+const std::function<Expression*()> parseExp5;
+const std::function<Expression*()> parseExp6;
+const std::function<Expression*()> parseExp7;
+const std::function<Expression*()> parseExp8;
+const std::function<Expression*()> parseExp9;
+const std::function<Expression*()> parseExp10;
+const std::function<Expression*()> parseExp11;
+const std::function<Expression*()> parseExp12;
+const std::function<Expression*()> parseExp13;
+const std::function<Expression*()> parseExp14;
+const std::function<Expression*()> parseExp15;
+const std::function<Expression*()> parseExp16;
+
+
+Expression *parseExp(){return parseExp1();}

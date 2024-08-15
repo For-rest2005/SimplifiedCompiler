@@ -5,9 +5,10 @@
 #include "Expression.h"
 #include "Statement.h"
 
-Statement* parser();
+int getDataType();
 Statement* getStatementGlobal();
 Statement* getStatementLocal();
+Expression* parseExp();
 
 class binaryParse{
 private:

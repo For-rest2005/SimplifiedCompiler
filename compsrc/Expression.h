@@ -63,6 +63,7 @@ class TernaryOp:public OperationExp{
     Expression *first,*second,*third;
     static std::unordered_map<std::string,std::function<int(Expression*)>> functionTable;
 public:
+    TernaryOp(Expression*,Expression*,Expression*,const std::string&);
     // virtual void codeGenerate(VarTable&,FunctionTable&) override{}
 };
 
