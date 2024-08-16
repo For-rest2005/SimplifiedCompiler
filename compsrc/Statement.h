@@ -5,25 +5,25 @@
 #include <vector>
 class Statement:public ASTNode{
 public:
-    virtual ~Statement() = 0;
+    virtual ~Statement() = default;
 };
 
-class WhileLoop:public Statement{
+class WhileStatement:public Statement{
 protected:
     Statement *body;
     Expression *condition;
 public:
-    WhileLoop(Expression*,Statement*);
-    virtual ~WhileLoop();
+    WhileStatement(Expression*,Statement*);
+    virtual ~WhileStatement();
 };
 
-class IfCondition:public Statement{
+class IfStatement:public Statement{
 protected:
     Statement *body1,*body2;
     Expression *condition;
 public:
-    IfCondition(Expression*,Statement*,Statement*);
-    virtual ~IfCondition();
+    IfStatement(Expression*,Statement*,Statement*);
+    virtual ~IfStatement();
 };
 
 
@@ -54,7 +54,7 @@ protected:
     std::string varName;
 public:
     LocalVarDeclaration(int,std::string);
-    virtual ~LocalVarDeclaration();
+    virtual ~LocalVarDeclaration() = default;
 };
 
 class LocalArrayDeclaration:public Statement{
@@ -63,13 +63,14 @@ protected:
     std::string varName;
     unsigned int size;
 public:
-    LocalArrayDeclaration(int,std::string,unsigned int)
+    LocalArrayDeclaration(int,std::string,unsigned int);
+    virtual ~LocalArrayDeclaration() = default;
 };
 
 class FunctionDefinition:public Statement{
 protected:
     int returnDataType;
-    std::vector<std::pair<int,std::string>> arguement;// type and name
+    std::vector<std::pair<int,std::string>> arguments;// type and name
     std::string funName;
     Statement *body;
     Statement *next;
@@ -81,7 +82,7 @@ public:
 class FunctionDeclaration:public Statement{
 protected:
     int returnDataType;
-    std::vector<std::pair<int,std::string>> arguement;// type and name
+    std::vector<std::pair<int,std::string>> arguments;// type and name
     std::string funName;
     Statement *next;
 public:
@@ -106,4 +107,23 @@ public:
     virtual ~ExpStatement();
 //remember to reset Statement addrIndex
 };
+
+class ReturnStatement:public Statement{
+protected:
+    Expression *value;
+public:
+    ReturnStatement(Expression*);
+    virtual ~ReturnStatement();
+};
+
+class ContinueStatement:public Statement{
+public:
+    virtual ~ContinueStatement() = default;
+};
+
+class BreakStatement:public Statement{
+public:
+    virtual ~BreakStatement() = default;
+};
+
 #endif

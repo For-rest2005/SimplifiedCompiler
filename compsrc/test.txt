@@ -1,12 +1,9 @@
-int global = 1;
-
+int global;
 void printf();
 
 int main(){
-    string s = "Hello World\n";
+    s = "Hello World\n";
+    s = (cur[1]+1)?(a == b)?1:2:1;
     printf(s);
-    cout <= 1;
-    if(s == 1)
-        printf(s);
-    return 1;
+    retur
 }

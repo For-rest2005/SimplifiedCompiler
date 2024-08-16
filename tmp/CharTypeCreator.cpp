@@ -1,9 +1,13 @@
-#include "../compsrc/Lexer.h"
 using namespace std;
-
+#include <bits/stdc++.h>
 inline bool isdigit(char ch){ return ch >= 48 && ch <= 57;}
 inline bool ischaracter(char ch){return (ch >= 97 && ch <= 122) || (ch >= 65 &&  ch <= 90);}
-unordered_set<char> tbl = {'~','!','#','%','^','&','*','(',')','-','+','=','{','}','|',':','\'',':','"','<',',','>','?','/'}; 
+unordered_set<char> tbl = {'~','!','#','%','^','&','*','(',')','-','+','=','{','}','|',':','\'','"','<',',','>','?','/','[',']',';'}; 
+#define DIGIT 1
+#define SPACE 2
+#define SYMBOL 3
+#define LETTER 4
+#define INVALID -1
 
 int tmp1[128],tmp2[128];
 
@@ -18,10 +22,7 @@ void print(int *tmp){
 
 int main(){
     for(int i = 0;i < 128;i++){
-        if(i == ';'){
-            tmp1[i] = CHARSEMICOLON;
-        }
-        else if(i >= 48 && i <= 57){
+        if(i >= 48 && i <= 57){
             tmp1[i] = DIGIT;
             tmp2[i] = i-48+1;
         }

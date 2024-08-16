@@ -23,7 +23,6 @@ public:
     Token(int,const std::string&);
     Token() = default;
     int toInteger();
-    Token &operator=(const Token&);
     const int type();
     const std::string value();
 };

@@ -18,11 +18,12 @@
 #define STRINGCONSTANT 5
 #define SEMICOLON 6
 
-#define ERRORTYPE -1
-#define VOID 0
-#define INT 1
-#define INTARRAY 2
-#define INTPOINTER 3
+#define DATATYPE_ERRORTYPE -1
+#define DATATYPE_VOID 0
+#define DATATYPE_INT 1
+#define DATATYPE_INTARRAY 2
+#define DATATYPE_INTPOINTER 3
+#define DATATYPE_STRING 4
 
 inline void errorReport(const std::string& errorData){
     std::cerr << "ERROR:" << errorData << std::endl;

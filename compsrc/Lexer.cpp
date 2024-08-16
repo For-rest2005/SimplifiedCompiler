@@ -1,9 +1,9 @@
 #include "Lexer.h"
 #include "Shared.h"
 
-static std::unordered_set<std::string> theOperator = {"==","<=",">=","&&","||"};
+static std::unordered_set<std::string> theOperator = {"==","<=",">=","&&","||","<<",">>"};
 static std::unordered_set<std::string> theKeyword = {"if","else","while","int","string","putchar","read","return","break","continue"};
-static int _charType[128] = {-1,-1,-1,-1,-1,-1,-1,-1,-1,2,2,2,2,2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,2,3,3,3,-1,3,3,3,3,3,3,3,3,3,-1,3,1,1,1,1,1,1,1,1,1,1,3,3,3,3,3,3,-1,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,-1,-1,-1,3,4,-1,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,3,3,3,3,-1};
+static int _charType[128] = {-1,-1,-1,-1,-1,-1,-1,-1,-1,2,2,2,2,2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,2,3,3,3,-1,3,3,3,3,3,3,3,3,3,-1,3,1,1,1,1,1,1,1,1,1,1,3,3,3,3,3,3,-1,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,3,-1,3,3,4,-1,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,3,3,3,3,-1};
 inline int charTypeGet(char ch){return _charType[int(ch)];}
 
 #define DIGIT 1
@@ -41,10 +41,6 @@ Token getStringConstant(){
     }
     return Token(STRINGCONSTANT,buffer);
 }
-Token& Token::operator=(const Token& obj){
-    _value = obj._value;
-    _type = obj._type;
-}
 
 static std::stack<Token> getTokenBuffer;
 
@@ -52,6 +48,7 @@ Token getToken(){
     if(!getTokenBuffer.empty()){
         Token top = getTokenBuffer.top();
         getTokenBuffer.pop();
+        if(top.type() == -1) exit(1);
         return top;
     }
     char ch;
@@ -102,10 +99,11 @@ Token getToken(){
     }else if(charTypeGet(ch) == INVALID){
         errorReport("Invalid character");
     }
+    std::cerr << type << ' ' << buffer << std::endl;
     return Token(type,buffer);
 }
 
-void skipTokens(int n = 1){
+void skipTokens(int n){
     while(n--) getToken();
 }
 
