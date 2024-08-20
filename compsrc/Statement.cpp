@@ -3,7 +3,7 @@
 GlobalVarDeclaration::GlobalVarDeclaration(int _dataType,std::string _varName,Statement *_next):dataType(_dataType),varName(_varName),next(_next){}
 GlobalVarDeclaration::~GlobalVarDeclaration(){delete next;}
 
-GlobalArrayDeclaration::GlobalArrayDeclaration(int _dataType,std::string _varName,unsigned int _size,Statement *_next):
+GlobalArrayDeclaration::GlobalArrayDeclaration(int _dataType,std::string _varName,int _size,Statement *_next):
     dataType(_dataType),varName(_varName),size(_size),next(_next){}
 GlobalArrayDeclaration::~GlobalArrayDeclaration(){delete next;}
 
@@ -31,7 +31,7 @@ Scope::~Scope(){
 ExpStatement::ExpStatement(Expression *_body):body(_body){}
 ExpStatement::~ExpStatement(){delete body;}
 
-LocalArrayDeclaration::LocalArrayDeclaration(int _dataType,std::string _varName,unsigned int _size):dataType(_dataType),varName(_varName),size(_size){}
+LocalArrayDeclaration::LocalArrayDeclaration(int _dataType,std::string _varName,int _size):dataType(_dataType),varName(_varName),size(_size){}
 
 LocalVarDeclaration::LocalVarDeclaration(int _dataType,std::string _varName):dataType(_dataType),varName(_varName){}
 

@@ -6,13 +6,15 @@
 
 class Expression:public ASTNode{
 protected:
-    static int addrIndex;
     int dataType;
-    unsigned int tmpMemAddr;
+    bool leftBit;
+    //This bit indicates that whether the expression is a left value.
+    //If leftBit is true, the data stored in the address is the address of the variable
 public:
     Expression(int);
-    Expression() = default;
+    Expression();
     virtual ~Expression() = default;
+    virtual void codeGenerate();
     //virtual void print() = 0;
 };
 
@@ -23,6 +25,7 @@ protected:
 public:
     FunctionCall(const std::string&,const std::vector<Expression*>&);
     virtual ~FunctionCall();
+    virtual void codeGenerate();
     //virtual void print();
 };
 
@@ -30,24 +33,22 @@ class VariableExp:public Expression{
 protected:
     std::string name;
     bool globalBit;
-    unsigned int varMemAddr;
 public:
     VariableExp(const std::string&);
+    virtual void codeGenerate();
     //virtual void print();
-    // virtual void codeGenerate(VarTable&,FunctionTable&) override;
 };
 
 class ArrayExp:public Expression{
 protected:
     std::string name;
-    bool varType;
-    unsigned int varMemAddr;
+    bool globalBit;
     Expression *index;  
 public:
     ArrayExp(const std::string&,Expression*);
     virtual ~ArrayExp();
+    virtual void codeGenerate();
     //virtual void print();
-    // virtual void codeGenerate(VarTable&,FunctionTable&) override;
 };
 
 class ConstantExp:public Expression{
@@ -55,8 +56,8 @@ protected:
     std::string value;
 public:
     ConstantExp(const std::string&,int);
+    virtual void codeGenerate();
     //virtual void print();
-    // virtual void codeGenerate(VarTable&,FunctionTable&) override;
 };
 
 class OperationExp:public Expression{
@@ -65,6 +66,7 @@ protected:
 public:
     OperationExp(const std::string&);
     virtual ~OperationExp() = default;
+    virtual void codeGenerate();
     //virtual void print() = 0;
 };
 
@@ -74,8 +76,8 @@ class UnaryOp:public OperationExp{
 public:
     UnaryOp(Expression*,const std::string&);
     virtual ~UnaryOp();
+    virtual void codeGenerate();
     //virtual void print();
-    // virtual void codeGenerate(VarTable&,FunctionTable&) override{}
 };
 
 class BinaryOp:public OperationExp{
@@ -84,8 +86,8 @@ class BinaryOp:public OperationExp{
 public:
     BinaryOp(Expression*,Expression*,const std::string&);
     virtual ~BinaryOp();
+    virtual void codeGenerate();
     //virtual void print();
-    // virtual void codeGenerate(VarTable&,FunctionTable&) override{}
 };
 
 class TernaryOp:public OperationExp{
@@ -94,8 +96,8 @@ class TernaryOp:public OperationExp{
 public:
     TernaryOp(Expression*,Expression*,Expression*,const std::string&);
     virtual ~TernaryOp();
+    virtual void codeGenerate();
     //virtual void print();
-    // virtual void codeGenerate(VarTable&,FunctionTable&) override{}
 };
 
 #endif

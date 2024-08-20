@@ -6,6 +6,7 @@
 class Statement:public ASTNode{
 public:
     virtual ~Statement() = default;
+    virtual void codeGenerate();
 };
 
 class WhileStatement:public Statement{
@@ -15,6 +16,7 @@ protected:
 public:
     WhileStatement(Expression*,Statement*);
     virtual ~WhileStatement();
+    virtual void codeGenerate();
 };
 
 class IfStatement:public Statement{
@@ -24,6 +26,7 @@ protected:
 public:
     IfStatement(Expression*,Statement*,Statement*);
     virtual ~IfStatement();
+    virtual void codeGenerate();
 };
 
 
@@ -35,6 +38,7 @@ protected:
 public:
     GlobalVarDeclaration(int,std::string,Statement*);
     virtual ~GlobalVarDeclaration();
+    virtual void codeGenerate();
 };
 
 class GlobalArrayDeclaration:public Statement{
@@ -42,10 +46,11 @@ protected:
     int dataType;
     Statement *next;
     std::string varName;
-    unsigned int size;
+    int size;
 public:
-    GlobalArrayDeclaration(int,std::string,unsigned int,Statement*);
+    GlobalArrayDeclaration(int,std::string,int,Statement*);
     virtual ~GlobalArrayDeclaration();
+    virtual void codeGenerate();
 };
 
 class LocalVarDeclaration:public Statement{
@@ -55,16 +60,18 @@ protected:
 public:
     LocalVarDeclaration(int,std::string);
     virtual ~LocalVarDeclaration() = default;
+    virtual void codeGenerate();
 };
 
 class LocalArrayDeclaration:public Statement{
 protected:
     int dataType;
     std::string varName;
-    unsigned int size;
+    int size;
 public:
-    LocalArrayDeclaration(int,std::string,unsigned int);
+    LocalArrayDeclaration(int,std::string,int);
     virtual ~LocalArrayDeclaration() = default;
+    virtual void codeGenerate();
 };
 
 class FunctionDefinition:public Statement{
@@ -77,6 +84,7 @@ protected:
 public:
     FunctionDefinition(int,std::string,std::vector<std::pair<int,std::string>>&,Statement*,Statement*);
     virtual ~FunctionDefinition();
+    virtual void codeGenerate();
 };
 
 class FunctionDeclaration:public Statement{
@@ -88,6 +96,7 @@ protected:
 public:
     FunctionDeclaration(int,std::string,std::vector<std::pair<int,std::string>>&,Statement*);
     virtual ~FunctionDeclaration();
+    virtual void codeGenerate();
 };
 
 class Scope:public Statement{
@@ -97,6 +106,7 @@ public:
     Scope() = default;
     void push(Statement*);
     virtual ~Scope();
+    virtual void codeGenerate();
 };
 
 class ExpStatement:public Statement{
@@ -105,6 +115,7 @@ protected:
 public:
     ExpStatement(Expression*);
     virtual ~ExpStatement();
+    virtual void codeGenerate();
 //remember to reset Statement addrIndex
 };
 
@@ -114,16 +125,19 @@ protected:
 public:
     ReturnStatement(Expression*);
     virtual ~ReturnStatement();
+    virtual void codeGenerate();
 };
 
 class ContinueStatement:public Statement{
 public:
     virtual ~ContinueStatement() = default;
+    virtual void codeGenerate();
 };
 
 class BreakStatement:public Statement{
 public:
     virtual ~BreakStatement() = default;
+    virtual void codeGenerate();
 };
 
 #endif

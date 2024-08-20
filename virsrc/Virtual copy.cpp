@@ -1,9 +1,6 @@
 /*
 This source file implement the virtual machine
 */
-
-#include<vector>
-#include<functional>
 #include<map>
 #include<iostream>
 
@@ -112,42 +109,26 @@ void Command70(int x = 0,int y = 0,int z = 0){
     std::cout << (char)mem[x] << ' ';
     rip++;
 }
-
-// void Command80:public Command{
-// public:
-//     public:
-//     Command80(int _x,int _y,int _z = 0):Command(_x,_y,_z){}
-//     virtual ~Command80() = default;
-//     virtual void execute(){}
-//     virtual void ripIncrement() override{
-//         if(mem[x]) rip = mem[y];
-//         else rip++;
-//     }
-// };
-
 void Command100(int x = 0,int y = 0,int z = 0){
     std::cerr << "successfully exit" << std::endl;
     exit(1);
 }
 
-std::map<int,void(*)(int,int,int)> cmdTable = {
+const std::map<int,void(*)(int,int,int)> cmdTable = {
     {0,Command0},{1,Command1},{2,Command2},{3,Command3},{4,Command4},{5,Command5},{6,Command6},{7,Command7},
     {8,Command8},{9,Command9},{10,Command10},{11,Command11},{12,Command12},{13,Command13},{14,Command14},
     {15,Command15},{16,Command16},{17,Command17},{18,Command18},{19,Command19},{20,Command20},{30,Command30},
-    {40,Command40},{50,Command50},{60,Command60},{70,Command70},{100,Command100}};
-
-//#endif
+    {40,Command40},{50,Command50},{60,Command60},{70,Command70},{100,Command100}
+};
 
 using namespace std;
-
 int main(){
     int tt,op,x,y,z;
     cin >> tt;
     for(int i = 0;i < tt;i++){
         cin >> op;
         x = y = z = 0;
-        if(op == 100)
-            ;
+        if(op == 100);
         else if(op == 50 || op == 60 || op == 30 || op == 40 || op == 70)
             cin >> x;
         else if(op == 0 || op == 3 || op == 14 || op == 20)
@@ -160,8 +141,7 @@ int main(){
         cmdlst[i][3] = z;
     }
     rip = 0;
-    while(true){
-        cmdTable[cmdlst[rip][0]](cmdlst[rip][1],cmdlst[rip][2],cmdlst[rip][3]);
-    }
+    while(true)
+        cmdTable.at(cmdlst[rip][0])(cmdlst[rip][1],cmdlst[rip][2],cmdlst[rip][3]);
     return 0;
 }

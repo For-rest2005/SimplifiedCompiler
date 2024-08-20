@@ -2,6 +2,11 @@
 #define _SHARED_H_
 #include "Lexer.h"
 #include "ASTNode.h"
+#include "Expression.h"
+#include "Statement.h"
+#include "MemoryAllocator.h"
+#include "SymbolTable.h"
+#include "Instruction.h"
 #include <stack>
 #include <string>
 #include <vector>
@@ -21,9 +26,8 @@
 #define DATATYPE_ERRORTYPE -1
 #define DATATYPE_VOID 0
 #define DATATYPE_INT 1
-#define DATATYPE_INTARRAY 2
-#define DATATYPE_INTPOINTER 3
-#define DATATYPE_STRING 4
+#define DATATYPE_INTPOINTER 2
+#define DATATYPE_STRINGCONSTANT 3
 
 inline void errorReport(const std::string& errorData){
     std::cerr << "ERROR:" << errorData << std::endl;

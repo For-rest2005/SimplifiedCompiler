@@ -2,8 +2,6 @@
 #define _PARSER_H_
 
 #include "Shared.h"
-#include "Expression.h"
-#include "Statement.h"
 
 int getDataType();
 Statement* getStatementGlobal();

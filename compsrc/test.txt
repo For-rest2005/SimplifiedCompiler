@@ -2,8 +2,11 @@ int global;
 void printf();
 
 int main(){
-    s = "Hello World\n";
-    s = (cur[1]+1)?(a == b)?1:2:1;
-    printf(s);
-    retur
+    if(1){
+        a;
+    }else if(){
+        a;
+    }else{
+        a;
+    }
 }

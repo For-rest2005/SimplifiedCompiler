@@ -1,5 +1,6 @@
 #include"Expression.h"
 
+Expression::Expression():dataType(DATATYPE_ERRORTYPE),leftBit(0){}
 Expression::Expression(int _dataType):dataType(_dataType){}
 
 OperationExp::OperationExp(const std::string &_op):op(_op){}

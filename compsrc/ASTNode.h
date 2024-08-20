@@ -4,11 +4,16 @@
 #include<string>
 #include"Shared.h"
 class ASTNode{
+protected:
+    static StackAllocator stackAlloc;
+    static StaticAllocator staticAlloc;
+    static VarTable varEnvir;
+    static FunctionTable funEnvir;
 public:
-    std::string ascode;//Maybe we need a data structure to store the assembly codes 
+    Instruction *front,*back;//The two pointers point to an empty instruction object
     virtual ~ASTNode() = default;
-    ASTNode() = default;
-    // virtual void codeGenerate(VarTable&,FunctionTable&);
+    ASTNode();
+    virtual void codeGenerate() = 0;
 };
 
 #endif 

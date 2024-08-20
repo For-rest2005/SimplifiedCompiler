@@ -1,7 +1,7 @@
 #include "Parser.h"
 
-static std::unordered_set<std::string> typeIndicator = {"int","void","int*"};
-static std::unordered_map<std::string,int> reDataType = {{"int",DATATYPE_INT},{"void",DATATYPE_VOID},{"int*",DATATYPE_INTPOINTER}};
+const static std::unordered_set<std::string> typeIndicator = {"int","void","int*"};
+const static std::unordered_map<std::string,int> reDataType = {{"int",DATATYPE_INT},{"void",DATATYPE_VOID},{"int*",DATATYPE_INTPOINTER}};
 
 int getDataType(){
     Token keyword = getToken();
@@ -9,10 +9,10 @@ int getDataType(){
     if(keyword.type() == ENDPOINT) return -1;
     std::string _str = keyword.value()+optional.value();
     if(typeIndicator.find(_str) != typeIndicator.end())
-        return reDataType[_str];
+        return reDataType.at(_str);
     unGetToken(optional);
     if(typeIndicator.find(keyword.value()) != typeIndicator.end())
-        return reDataType[keyword.value()];
+        return reDataType.at(keyword.value());
     unGetToken(keyword);
     return -2;
 }
@@ -177,7 +177,7 @@ Expression *_parseExp16(){
         unGetToken(buffer);
         if(name.type() == IDENTIFIER) return new VariableExp(name.value());
         else if(name.type() == INTCONSTANT) return new ConstantExp(name.value(),DATATYPE_INT);
-        else if(name.type() == STRINGCONSTANT) return new ConstantExp(name.value(),DATATYPE_STRING);
+        else if(name.type() == STRINGCONSTANT) return new ConstantExp(name.value(),DATATYPE_STRINGCONSTANT);
         else return nullptr;
     }
 }
@@ -197,7 +197,7 @@ Expression *_parseExp15(){
 const std::function<Expression*()> parseExp15 = _parseExp15;
 Expression *_parseExp14(){
     Token buffer = getToken();
-    if(buffer.value() == "+" || buffer.value() == "-" || buffer.value() == "*")
+    if(buffer.value() == "+" || buffer.value() == "-" || buffer.value() == "*" || buffer.value() == "&")
         return new UnaryOp(_parseExp14(),buffer.value());
     unGetToken(buffer);
     return parseExp15();
