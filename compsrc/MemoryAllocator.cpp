@@ -6,6 +6,7 @@ const int StackAllocator::top(){
 int StackAllocator::alloc(int _size){
     st.top() += _size;
     return st.top()-_size;
+    //The address this function returns should be different for local array and global array
 }
 void StackAllocator::dealloc(int _size = 1){
     st.top() -= _size;

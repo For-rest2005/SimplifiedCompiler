@@ -5,17 +5,15 @@
 #include <functional>
 
 class Expression:public ASTNode{
-protected:
-    int dataType;
-    bool leftBit;
-    //This bit indicates that whether the expression is a left value.
-    //If leftBit is true, the data stored in the address is the address of the variable
 public:
+    int dataType;
+    bool globalBit;
     Expression(int);
     Expression();
     virtual ~Expression() = default;
-    virtual void codeGenerate();
-    //virtual void print() = 0;
+    virtual void codeGenerate() = 0;
+    virtual void codeGenerateOptional();
+    //The codeGenerate() produce a sequence of assembly codes that push the result of this expression to the top of stack memory.
 };
 
 class FunctionCall:public Expression{
@@ -32,22 +30,22 @@ public:
 class VariableExp:public Expression{
 protected:
     std::string name;
-    bool globalBit;
 public:
     VariableExp(const std::string&);
     virtual void codeGenerate();
+    virtual void codeGenerateOptional();
     //virtual void print();
 };
 
 class ArrayExp:public Expression{
 protected:
     std::string name;
-    bool globalBit;
     Expression *index;  
 public:
     ArrayExp(const std::string&,Expression*);
     virtual ~ArrayExp();
     virtual void codeGenerate();
+    virtual void codeGenerateOptional();
     //virtual void print();
 };
 

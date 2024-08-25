@@ -1,7 +1,7 @@
 #include "Lexer.h"
 
 const static std::unordered_set<std::string> theOperator = {"==","<=",">=","&&","||","<<",">>"};
-const static std::unordered_set<std::string> theKeyword = {"if","else","while","int","string","putchar","read","return","break","continue"};
+const static std::unordered_set<std::string> theKeyword = {"if","else","while","int","string","putchar","print","read","return","break","continue"};
 const static int _charType[128] = {-1,-1,-1,-1,-1,-1,-1,-1,-1,2,2,2,2,2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,2,3,3,3,-1,3,3,3,3,3,3,3,3,3,-1,3,1,1,1,1,1,1,1,1,1,1,3,3,3,3,3,3,-1,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,3,-1,3,3,4,-1,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,3,3,3,3,-1};
 inline int charTypeGet(char ch){return _charType[int(ch)];}
 

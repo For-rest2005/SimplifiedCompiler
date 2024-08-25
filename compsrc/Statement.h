@@ -140,4 +140,31 @@ public:
     virtual void codeGenerate();
 };
 
+class ReadStatement:public Statement{
+protected:
+    Expression *addr;
+public:
+    ReadStatement(Expression*);
+    virtual ~ReadStatement();
+    virtual void codeGenerate();
+};
+
+class PrintStatement:public Statement{
+protected:
+    Expression *value;
+public:
+    PrintStatement(Expression*);
+    virtual ~PrintStatement();
+    virtual void codeGenerate();
+};
+
+class PutcharStatement:public Statement{
+protected:
+    Expression *value;
+public:
+    PutcharStatement(Expression*);
+    virtual ~PutcharStatement();
+    virtual void codeGenerate();
+};
+
 #endif

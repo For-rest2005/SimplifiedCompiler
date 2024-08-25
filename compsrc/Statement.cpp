@@ -37,3 +37,12 @@ LocalVarDeclaration::LocalVarDeclaration(int _dataType,std::string _varName):dat
 
 ReturnStatement::ReturnStatement(Expression *_value):value(_value){}
 ReturnStatement::~ReturnStatement(){delete value;}
+
+ReadStatement::ReadStatement(Expression *_addr):addr(_addr){}
+ReadStatement::~ReadStatement(){delete addr;}
+
+PutcharStatement::PutcharStatement(Expression *_value):value(_value){}
+PutcharStatement::~PutcharStatement(){delete value;}
+
+PrintStatement::PrintStatement(Expression *_value):value(_value){}
+PrintStatement::~PrintStatement(){delete value;}

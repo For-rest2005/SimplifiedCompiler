@@ -101,7 +101,7 @@ Statement* getStatementLocal(){
             return new ReturnStatement(nullptr);
         Expression *value = parseExp();
         skipTokens();
-        return new ReturnStatement(value);
+        curStatement = new ReturnStatement(value);
     }
     else if(_str == "continue"){
         skipTokens();
@@ -110,6 +110,21 @@ Statement* getStatementLocal(){
     else if(_str == "break"){
         skipTokens();
         return new BreakStatement();
+    }
+    else if(_str == "read"){
+        Expression *addr = parseExp();
+        skipTokens();
+        curStatement = new ReadStatement(addr);
+    }
+    else if(_str == "print"){   
+        Expression *value = parseExp();
+        skipTokens();
+        curStatement = new PrintStatement(value);
+    }
+    else if(_str == "putchar"){
+        Expression *value = parseExp();
+        skipTokens();
+        curStatement = new PutcharStatement(value);
     }
     else if(typeIndicator.find(_str) != typeIndicator.end()){
         unGetToken(keyword);
