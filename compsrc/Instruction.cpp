@@ -7,13 +7,12 @@ void Instruction::print(){
     std::cout << op << ' ';
     if(op == 100);
     else if(op == 50 || op == 60 || op == 30 || op == 40 || op == 70)
-        std::cout << x << '\n';
+        std::cout << x;
     else if(op == 0 || op == 3 || op == 14 || op == 20)
-        std::cout << x << ' ' << y << '\n';
+        std::cout << x << ' ' << y;
     else 
-        std::cout << x << ' ' << y << ' ' << z << '\n';
-    std::cout << std::endl;
-    //if(next) next->print();
+        std::cout << x << ' ' << y << ' ' << z;
+    std::cout << '\n';
 }
 void Instruction::replaceJmptag(int _x){
     if(op == 20) y = _x;

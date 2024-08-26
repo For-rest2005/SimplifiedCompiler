@@ -15,14 +15,13 @@ public:
     GlobalStatement *next;
     GlobalStatement() = default;
     GlobalStatement(GlobalStatement*);
-    virtual ~GlobalStatement() = default;
+    virtual ~GlobalStatement();
     virtual void codeGenerate() = 0;
 };
 
 class Program:public GlobalStatement{
 public:
     Program() = default;
-    virtual ~Program();
     virtual void codeGenerate();
 };
 
@@ -32,7 +31,6 @@ protected:
     std::string varName;
 public:
     GlobalVarDeclaration(int,std::string,GlobalStatement*);
-    virtual ~GlobalVarDeclaration();
     virtual void codeGenerate();
 };
 
@@ -43,7 +41,6 @@ protected:
     int size;
 public:
     GlobalArrayDeclaration(int,std::string,int,GlobalStatement*);
-    virtual ~GlobalArrayDeclaration();
     virtual void codeGenerate();
 };
 
@@ -55,7 +52,6 @@ protected:
     Statement *body;
 public:
     FunctionDefinition(int,std::string,std::vector<std::pair<int,std::string>>&,Statement*,GlobalStatement*);
-    virtual ~FunctionDefinition();
     virtual void codeGenerate();
 };
 
@@ -66,7 +62,6 @@ protected:
     std::string funName;
 public:
     FunctionDeclaration(int,std::string,std::vector<std::pair<int,std::string>>&,GlobalStatement*);
-    virtual ~FunctionDeclaration();
     virtual void codeGenerate();
 };
 
@@ -76,7 +71,6 @@ protected:
     Expression *condition;
 public:
     WhileStatement(Expression*,Statement*);
-    virtual ~WhileStatement();
     virtual void codeGenerate();
 };
 
@@ -86,7 +80,6 @@ protected:
     Expression *condition;
 public:
     IfStatement(Expression*,Statement*,Statement*);
-    virtual ~IfStatement();
     virtual void codeGenerate();
 };
 
@@ -96,7 +89,6 @@ protected:
     std::string varName;
 public:
     LocalVarDeclaration(int,std::string);
-    virtual ~LocalVarDeclaration() = default;
     virtual void codeGenerate();
 };
 
@@ -107,7 +99,6 @@ protected:
     int size;
 public:
     LocalArrayDeclaration(int,std::string,int);
-    virtual ~LocalArrayDeclaration() = default;
     virtual void codeGenerate();
 };
 
@@ -117,7 +108,6 @@ protected:
 public:
     Scope() = default;
     void push(Statement*);
-    virtual ~Scope();
     virtual void codeGenerate();
 };
 
@@ -126,7 +116,6 @@ protected:
     Expression *body;
 public:
     ExpStatement(Expression*);
-    virtual ~ExpStatement();
     virtual void codeGenerate();
 //remember to reset Statement addrIndex
 };
@@ -136,19 +125,16 @@ protected:
     Expression *value;
 public:
     ReturnStatement(Expression*);
-    virtual ~ReturnStatement();
     virtual void codeGenerate();
 };
 
 class ContinueStatement:public Statement{
 public:
-    virtual ~ContinueStatement() = default;
     virtual void codeGenerate();
 };
 
 class BreakStatement:public Statement{
 public:
-    virtual ~BreakStatement() = default;
     virtual void codeGenerate();
 };
 
@@ -157,7 +143,6 @@ protected:
     Expression *addr;
 public:
     ReadStatement(Expression*);
-    virtual ~ReadStatement();
     virtual void codeGenerate();
 };
 
@@ -166,7 +151,6 @@ protected:
     Expression *value;
 public:
     PrintStatement(Expression*);
-    virtual ~PrintStatement();
     virtual void codeGenerate();
 };
 
@@ -175,7 +159,6 @@ protected:
     Expression *value;
 public:
     PutcharStatement(Expression*);
-    virtual ~PutcharStatement();
     virtual void codeGenerate();
 };
 

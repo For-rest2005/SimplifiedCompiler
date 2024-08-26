@@ -82,13 +82,12 @@ inline void nodeConcatenateOptional(ASTNode *cur,Expression *next){
 void VariableExp::codeGenerate(){
     auto varinfo = varEnvir.getVar(name,globalBit);
     dataType = varinfo.first;
+    pushbackInstr(INSTR_SUB,RSP,CON1,RSP);
     if(globalBit){
-        pushbackInstr(INSTR_SUB,RSP,CON1,RSP);
         pushbackInstr(INSTR_SARR,varinfo.second,0,RSP);
     }
     else{
-        pushbackInstr(INSTR_SUB,RSP,CON1,RSP);
-        pushbackInstr(INSTR_RARR,RBQ,-varinfo.second,T0);
+        pushbackInstr(INSTR_RARR,-varinfo.second,RBQ,T0);
         pushbackInstr(INSTR_SARR,T0,0,RSP);
     }
 }
@@ -118,6 +117,7 @@ void ArrayExp::codeGenerate(){
         pushbackInstr(INSTR_RARR,0,T0,T0);
         pushbackInstr(INSTR_SARR,T0,0,RSP);
     }
+    delete index;
 }
 
 void ArrayExp::codeGenerateOptional(){
@@ -130,6 +130,7 @@ void ArrayExp::codeGenerateOptional(){
     pushbackInstr(INSTR_RARR,0,RSP,T0);
     pushbackInstr(INSTR_ADD,CON,T0,T0);
     pushbackInstr(INSTR_SARR,T0,0,RSP);
+    delete index;
 }
 
 void ConstantExp::codeGenerate(){
@@ -144,7 +145,6 @@ void ConstantExp::codeGenerate(){
             stackPushConstant(this,value[i]);
         break;
     }
-    std::cout << "constant:" << value << std::endl;
 }
 
 void UnaryOp::codeGenerate(){
@@ -163,7 +163,12 @@ void UnaryOp::codeGenerate(){
         if(first->dataType == DATATYPE_INT)
             dataType == DATATYPE_INTPOINTER;
         else errorReport("Invalid unary operator " + op);
-        concatenate(back,first->front,first->back);
+        concatenate(back,first->front->next,first->back);
+        if(!first->globalBit){
+            pushbackInstr(INSTR_RARR,0,RSP,T0);
+            pushbackInstr(INSTR_SUB,RBQ,T0,T0);
+            pushbackInstr(INSTR_SARR,T0,0,RSP);
+        }
         delete first->front;
     }
     else{
@@ -193,7 +198,7 @@ void BinaryOp::codeGenerate(){
             // In this kind of operation, we store 0 at the top of the stack 
             dataType = DATATYPE_INT;
             pushbackInstr(INSTR_RARR,0,RSP,T1);
-            pushbackInstr(INSTR_JALI,0,0,0,"");
+            pushbackInstr(INSTR_JALI,0,0,0,"+5");
             pushbackInstr(INSTR_SARR,T1,0,T0);
             pushbackInstr(INSTR_ADD,RSP,CON1,RSP);
             pushbackInstr(INSTR_ADD,T0,CON1,T0);
@@ -276,7 +281,7 @@ void FunctionCall::codeGenerate(){
     pushbackInstr(INSTR_LI,bias,CON,0);
     pushbackInstr(INSTR_ADD,CON,T1,T1);
     pushbackInstr(INSTR_SARR,T1,0,T0);
-    pushbackInstr(INSTR_JAL,0,0,0,name);
+    pushbackInstr(INSTR_JALI,0,0,0,name);
     pushbackInstr(INSTR_ADD,RBQ,CON1,RSP);
     pushbackInstr(INSTR_RARR,0,RSP,RBQ);
     pushbackInstr(INSTR_SARR,RAX,0,RSP);    
@@ -325,7 +330,7 @@ void ReturnStatement::codeGenerate(){
 }
 
 void WhileStatement::codeGenerate(){
-    pushbackInstr(INSTR_JAL,0,0,0);
+    pushbackInstr(INSTR_JALI,0,0,0);
     Instruction* f1 = back;
     nodeConcatenate(this,body);
     Instruction* bodyInstr = f1->next;
@@ -351,7 +356,7 @@ void IfStatement::codeGenerate(){
     pushbackInstr(INSTR_JALE,T0,0,0);
     Instruction* f1 = back;
     if(body2) nodeConcatenate(this,body2);
-    pushbackInstr(INSTR_JAL,0,0,0);
+    pushbackInstr(INSTR_JALI,0,0,0);
     Instruction* f2 = back;
     nodeConcatenate(this,body1);
     pushbackInstr(INSTR_LI,0,CON,0);
@@ -365,7 +370,8 @@ void GlobalVarDeclaration::codeGenerate(){
 }
 
 void GlobalArrayDeclaration::codeGenerate(){
-    varEnvir.addVar(varName,dataType,size);
+    if(dataType == DATATYPE_INT)
+        varEnvir.addVar(varName,DATATYPE_INTPOINTER,size);
 }
 
 void LocalVarDeclaration::codeGenerate(){
@@ -373,7 +379,8 @@ void LocalVarDeclaration::codeGenerate(){
 }
 
 void LocalArrayDeclaration::codeGenerate(){
-    varEnvir.addVar(varName,dataType,size);
+    if(dataType == DATATYPE_INT)
+        varEnvir.addVar(varName,DATATYPE_INTPOINTER,size);
 }
 
 void FunctionDeclaration::codeGenerate(){
@@ -388,7 +395,6 @@ void FunctionDefinition::codeGenerate(){
     for(auto tmp:arguments)
         varEnvir.addVar(tmp.second,tmp.first,1);
     nodeConcatenate(this,body);
-    std::cout << funName << std::endl;
     if(labelPos.find(funName) != labelPos.end())
         errorReport("Redefine function "+funName);
     labelPos[funName] = this->front->next;
@@ -406,11 +412,11 @@ void Scope::codeGenerate(){
 }
 
 void BreakStatement::codeGenerate(){
-    pushbackInstr(INSTR_JAL,0,0,0,".break");
+    pushbackInstr(INSTR_JALI,0,0,0,".break");
 }
 
 void ContinueStatement::codeGenerate(){
-    pushbackInstr(INSTR_JAL,0,0,0,".continue");
+    pushbackInstr(INSTR_JALI,0,0,0,".continue");
 }
 
 void Program::codeGenerate(){
@@ -420,6 +426,6 @@ void Program::codeGenerate(){
     pushbackInstr(INSTR_LI,0,CON0,0);
     pushbackInstr(INSTR_LI,1,CON1,0);
     pushbackInstr(INSTR_LI,6,stacktop,0);
-    pushbackInstr(INSTR_JAL,0,0,0,"main");
+    pushbackInstr(INSTR_JALI,0,0,0,"main");
     pushbackInstr(INSTR_EXIT,0,0,0);
 }

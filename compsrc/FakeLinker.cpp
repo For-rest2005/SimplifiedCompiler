@@ -30,7 +30,6 @@ void linker(){
     program->codeGenerate();
     GlobalStatement *cur = program->next;
     while(cur){
-        std::cout << cnt++ << ' ' << cur << std::endl;
         nodeConcatenate(program,cur);
         cur = cur->next;
     }
@@ -41,9 +40,6 @@ void linker(){
     while(instr){
         instr->id = id;
         id++;
-        std::cout << id << ' ' << instr->next << ' ';
-        instr->print();
-        std::cout << std::endl;
         instr = instr->next;
     }
     for(auto tmp:breakJmp)
@@ -51,7 +47,6 @@ void linker(){
     for(auto tmp:continueJmp)
         _continueJmp.insert(tmp->id);
     for(auto tmp:jmpLabel){
-        std::cout << tmp.first << ' ' << tmp.second << std::endl;
         if(tmp.second == ".continue")
             tmp.first->replaceJmptag(*_continueJmp.upper_bound(tmp.first->id));
         else if(tmp.second == ".break")
@@ -64,6 +59,7 @@ void linker(){
     for(auto tmp:jmpInstr)
         tmp.first->replaceJmptag(tmp.second->id);
     instr = program->front->next;
+    std::cout << id << std::endl;
     while(instr){
         instr->print();
         instr = instr->next;

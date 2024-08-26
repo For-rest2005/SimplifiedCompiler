@@ -9,7 +9,6 @@ public:
     bool globalBit;
     Expression(int);
     Expression() = default;
-    virtual ~Expression() = default;
     virtual void codeGenerate() = 0;
     virtual void codeGenerateOptional();
     //The codeGenerate() produce a sequence of assembly codes that push the result of this expression to the top of stack memory.
@@ -21,7 +20,6 @@ protected:
     std::vector<Expression*> arguments;
 public:
     FunctionCall(const std::string&,const std::vector<Expression*>&);
-    virtual ~FunctionCall();
     virtual void codeGenerate();
     //virtual void print();
 };
@@ -42,7 +40,6 @@ protected:
     Expression *index;  
 public:
     ArrayExp(const std::string&,Expression*);
-    virtual ~ArrayExp();
     virtual void codeGenerate();
     virtual void codeGenerateOptional();
     //virtual void print();
@@ -62,7 +59,6 @@ protected:
     std::string op;
 public:
     OperationExp(const std::string&);
-    virtual ~OperationExp() = default;
     virtual void codeGenerate() = 0;
     //virtual void print() = 0;
 };
@@ -72,7 +68,6 @@ class UnaryOp:public OperationExp{
     static std::unordered_map<std::string,std::function<int(Expression*)>> functionTable;
 public:
     UnaryOp(Expression*,const std::string&);
-    virtual ~UnaryOp();
     virtual void codeGenerate();
     //virtual void print();
 };
@@ -82,7 +77,6 @@ class BinaryOp:public OperationExp{
     static std::unordered_map<std::string,std::function<int(Expression*)>> functionTable;
 public:
     BinaryOp(Expression*,Expression*,const std::string&);
-    virtual ~BinaryOp();
     virtual void codeGenerate();
     //virtual void print();
 };
@@ -92,7 +86,6 @@ class TernaryOp:public OperationExp{
     static std::unordered_map<std::string,std::function<int(Expression*)>> functionTable;
 public:
     TernaryOp(Expression*,Expression*,Expression*,const std::string&);
-    virtual ~TernaryOp();
     virtual void codeGenerate();
     //virtual void print();
 };
