@@ -4,7 +4,7 @@ This source file implement the virtual machine
 #include<map>
 #include<iostream>
 
-int mem[50000];
+int mem[50010];
 int &rip = mem[0];
 int cmdlst[10010][4];
 void Command0(int x = 0,int y = 0,int z = 0){

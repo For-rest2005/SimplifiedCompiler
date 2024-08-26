@@ -9,6 +9,11 @@ public:
     virtual void codeGenerate();
 };
 
+class GlobalStatement:public Statement{
+public:
+    GetStatementGlobal();
+};
+
 class WhileStatement:public Statement{
 protected:
     Statement *body;
@@ -29,6 +34,13 @@ public:
     virtual void codeGenerate();
 };
 
+class Program:public Statement{
+public:
+    Statement *next;
+    Program();
+    virtual ~Program();
+    virtual void codeGenerate();
+};
 
 class GlobalVarDeclaration:public Statement{
 protected:

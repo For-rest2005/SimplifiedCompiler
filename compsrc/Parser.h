@@ -18,5 +18,4 @@ public:
     Expression *operator()();
 };
 
-
 #endif

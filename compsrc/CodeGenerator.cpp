@@ -54,17 +54,17 @@ inline void concatenate(Instruction *&preback,Instruction *front,Instruction *ba
     preback = back;
 }
 
+inline void nodeConcatenate(ASTNode *cur,ASTNode *next){
+    next->codeGenerate();
+    if(next->front->next) concatenate(cur->back,next->front->next,next->back);
+    delete next->front;
+}
+
 inline void stackPushConstant(Expression *exp,int value){
     //This function append the assembly code that push a constant to the top of the stack
     exp->pushbackInstr(INSTR_SUB,RSP,CON1,RSP);
     exp->pushbackInstr(INSTR_LI,value,CON,0);
     exp->pushbackInstr(INSTR_SARR,CON,0,RSP);
-}
-
-inline void nodeConcatenate(ASTNode *cur,ASTNode *next){
-    next->codeGenerate();
-    concatenate(cur->back,next->front->next,next->back);
-    delete next->front;
 }
 
 inline void nodeConcatenateOptional(ASTNode *cur,Expression *next){
@@ -350,4 +350,67 @@ void IfStatement::codeGenerate(){
     pushbackInstr(INSTR_LI,0,CON,0);
     jmpInstr[f1] = f2->next;
     jmpInstr[f2] = back;
+}
+
+void GlobalVarDeclaration::codeGenerate(){
+    varEnvir.addVar(varName,dataType,1);
+}
+
+void GlobalArrayDeclaration::codeGenerate(){
+    varEnvir.addVar(varName,dataType,size);
+}
+
+void LocalVarDeclaration::codeGenerate(){
+    varEnvir.addVar(varName,dataType,1);
+}
+
+void GlobalArrayDeclaration::codeGenerate(){
+    varEnvir.addVar(varName,dataType,size);
+}
+
+void FunctionDeclaration::codeGenerate(){
+    FunctionData funData(returnDataType,arguments);
+    funEnvir.addFun(funName,funData);
+}
+
+void FunctionDefinition::codeGenerate(){
+    FunctionData funData(returnDataType,arguments);
+    funEnvir.addFun(funName,funData);
+    varEnvir.enterScope();
+    for(auto tmp:arguments)
+        varEnvir.addVar(tmp.second,tmp.first,1);
+    nodeConcatenate(this,body);
+    if(labelPos.find(funName) != labelPos.end())
+        errorReport("Redefine function "+funName);
+    labelPos[funName] = this->front->next;
+    varEnvir.exitScope();
+    delete body;
+}
+
+void Scope::codeGenerate(){
+    varEnvir.enterScope();
+    for(auto tmp:body){
+        nodeConcatenate(this,tmp);
+        delete tmp;
+    }
+    varEnvir.exitScope();
+}
+
+void BreakStatement::codeGenerate(){
+    pushbackInstr(INSTR_JAL,0,0,0,".break");
+}
+
+void ContinueStatement::codeGenerate(){
+    pushbackInstr(INSTR_JAL,0,0,0,".continue");
+}
+
+void Program::codeGenerate(){
+    static constexpr int stacktop = 50000;
+    pushbackInstr(INSTR_LI,stacktop,RSP,0);
+    pushbackInstr(INSTR_LI,stacktop,RBQ,0);
+    pushbackInstr(INSTR_LI,0,CON0,0);
+    pushbackInstr(INSTR_LI,1,CON1,0);
+    pushbackInstr(INSTR_LI,6,stacktop,0);
+    pushbackInstr(INSTR_JAL,0,0,0,"main");
+    pushbackInstr(INSTR_EXIT,0,0,0);
 }

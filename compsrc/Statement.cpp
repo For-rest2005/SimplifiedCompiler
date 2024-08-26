@@ -46,3 +46,5 @@ PutcharStatement::~PutcharStatement(){delete value;}
 
 PrintStatement::PrintStatement(Expression *_value):value(_value){}
 PrintStatement::~PrintStatement(){delete value;}
+
+Program::~Program(){delete next;}

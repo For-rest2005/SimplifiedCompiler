@@ -17,16 +17,10 @@ public:
         back->next = new Instruction(op,x,y,z);
         back = back->next;
     }
-    inline void pushbackInstr(int op,int x,int y,int z,std::string label,bool type = true){
-        if(type){
-            back->next = new Instruction(op,x,y,z);
-            back = back->next;
-            jmpLabel[back] = label;
-        }else{
-            back->next = new Instruction(op,x,y,z);
-            back = back->next;
-            labelPos[label] = back;
-        }
+    inline void pushbackInstr(int op,int x,int y,int z,std::string label){
+        back->next = new Instruction(op,x,y,z);
+        back = back->next;
+        jmpLabel[back] = label;
     }
     Instruction *front,*back;//The two pointers point to an empty instruction object
     virtual ~ASTNode() = default;
