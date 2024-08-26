@@ -1,47 +1,47 @@
 #include "SymbolTable.h"
 
 void LocalVarTable::exitScope(){
-    addrTbl.pop_back();
-    typeTbl.pop_back();
+    curAddr.pop();
+    varTbl.pop_back();
 }
 void LocalVarTable::enterScope(){
-    addrTbl.push_back({});
-    typeTbl.push_back({});
+    if(curAddr.empty()) curAddr.push(1);
+    else curAddr.push(curAddr.top());
+    varTbl.push_back({});
 }
-bool LocalVarTable::checkScope(std::string _str){
-    return typeTbl.back().find(_str) != typeTbl.back().end();
+bool LocalVarTable::checkScope(const std::string& _str){
+    return varTbl.back().find(_str) != varTbl.back().end();
 }
-std::pair<int,int> LocalVarTable::getVar(std::string _str){
-    for(auto riter2 = addrTbl.rbegin(),riter1 = typeTbl.rbegin();riter1 != typeTbl.rend();riter1++,riter2++){
-        if(riter1->find(_str) != riter1->end()){
-            return {(*riter1)[_str],(*riter2)[_str]};
-        }
+std::pair<int,int> LocalVarTable::getVar(const std::string& _str){
+    for(auto it = varTbl.rbegin();it != varTbl.rend();it++){
+        if(it->find(_str) != it->end())
+            return (*it)[_str];
     }
     return {-1,0};
 }
-bool LocalVarTable::empty(){return typeTbl.empty();}
-void LocalVarTable::addVar(std::string _str,int _type,int _addr){
-    typeTbl.back().insert({_str,_type});
-    addrTbl.back().insert({_str,_addr});
+bool LocalVarTable::empty(){return varTbl.empty();}
+void LocalVarTable::addVar(const std::string& _str,int _type,int _size){
+    varTbl.back().insert({_str,{_type,curAddr.top()+_size-1}});
+    curAddr.top() += _size;
 }
 
-std::pair<int,int> GlobalVarTable::getVar(std::string _str){
-    if(typeTbl.find(_str) != typeTbl.end())
-        return {typeTbl[_str],addrTbl[_str]};
+std::pair<int,int> GlobalVarTable::getVar(const std::string& _str){
+    if(varTbl.find(_str) != varTbl.end())
+        return varTbl[_str];
     return {-1,0};
 }
-void GlobalVarTable::addVar(std::string _str,int _type,int _addr){
-    typeTbl[_str] = _type;
-    addrTbl[_str] = _addr;
+void GlobalVarTable::addVar(const std::string& _str,int _type,int _size){
+    varTbl.insert({_str,{_type,curAddr}});
+    curAddr += _size;
 }
-bool GlobalVarTable::checkScope(std::string _str){
-    return typeTbl.find(_str) != typeTbl.end();
+bool GlobalVarTable::checkScope(const std::string& _str){
+    return varTbl.find(_str) != varTbl.end();
 }
 
 void VarTable::exitScope(){local.enterScope();}
 void VarTable::enterScope(){local.enterScope();}
-bool VarTable::checkScope(std::string _str){return (local.empty()?global.checkScope(_str):local.checkScope(_str));}
-std::pair<int,int> VarTable::getVar(std::string _str,bool &globalBit){
+bool VarTable::checkScope(const std::string& _str){return (local.empty()?global.checkScope(_str):local.checkScope(_str));}
+std::pair<int,int> VarTable::getVar(const std::string& _str,bool &globalBit){
     std::pair<int,int> varData = local.getVar(_str);
     if(varData.first != -1){
         globalBit = 0;
@@ -54,8 +54,21 @@ std::pair<int,int> VarTable::getVar(std::string _str,bool &globalBit){
     }
     return {-1,0};
 }
-void VarTable::addVar(std::string _str,int _type,int _addr){
-    if(local.empty()) global.addVar(_str,_type,_addr);
-    else local.addVar(_str,_type,_addr);
+void VarTable::addVar(const std::string& _str,int _type,int _size = 1){
+    if(checkScope(_str))
+        errorReport("Redefine variable "+_str);
+    if(local.empty()) global.addVar(_str,_type,_size);
+    else local.addVar(_str,_type,_size);
+}
+
+FunctionData::FunctionData(int _returnType,const std::vector<std::pair<int,std::string>>& _arguments)
+:returnType(_returnType),arguments(_arguments){}
+FunctionData FunctionTable::getFun(const std::string& _str){
+    // Error may occur here
+    return funTbl.at(_str);
+}
+void FunctionTable::addFun(const std::string& _str,const FunctionData& funData){
+    // Error may occur here
+    funTbl[_str] = funData;
 }
 

@@ -37,12 +37,17 @@ const static std::unordered_map<std::string,int> opCoInstr = {
 #define RIP 0
 #define RBQ 1
 #define RSP 2 //RSP points to the last data in the stack
-#define T0 3
-#define T1 4
-#define T2 5
+#define RAX 3
+#define T0 4
+#define T1 5
+#define T2 6
 #define CON0 101
 #define CON1 102
 #define CON 100
+
+extern std::unordered_map<std::string,Instruction*> labelPos;
+extern std::unordered_map<Instruction*,std::string> jmpLabel;
+extern std::unordered_map<Instruction*,Instruction*> jmpInstr;
 
 inline void concatenate(Instruction *&preback,Instruction *front,Instruction *back){
     preback->next = front;
@@ -207,6 +212,11 @@ void BinaryOp::codeGenerate(){
         pushbackInstr(INSTR_NOT,T0,T0,0);
         pushbackInstr(INSTR_SARR,T0,0,RSP);
     }
+    else if(op == ","){
+        nodeConcatenate(this,second);
+        nodeConcatenate(this,first);
+        pushbackInstr(INSTR_ADD,RSP,CON1,RSP);
+    }
     else{
         nodeConcatenate(this,first);
         nodeConcatenate(this,second);
@@ -240,7 +250,29 @@ void TernaryOp::codeGenerate(){
 }
 
 void FunctionCall::codeGenerate(){
-
+    static constexpr int bias = 4;
+    pushbackInstr(INSTR_SUB,RSP,CON1,RSP);
+    pushbackInstr(INSTR_SARR,RBQ,0,RSP);
+    pushbackInstr(INSTR_SUB,RSP,CON1,RSP);
+    FunctionData _fun = funEnvir.getFun(name);
+    dataType = _fun.returnType;
+    if(arguments.size() != _fun.arguments.size())
+        errorReport("Invalid function call(arguments size mismatch)");
+    for(int i = 0;i < arguments.size();i++){
+        nodeConcatenate(this,arguments[i]);
+        if(arguments[i]->dataType != _fun.arguments[i].first)
+            errorReport("Invalid function call(arguments type mismatch)");
+    }
+    pushbackInstr(INSTR_LI,arguments.size(),CON,0);
+    pushbackInstr(INSTR_ADD,CON,RSP,T0);
+    pushbackInstr(INSTR_RARR,0,RIP,T1);
+    pushbackInstr(INSTR_LI,bias,CON,0);
+    pushbackInstr(INSTR_ADD,CON,T1,T1);
+    pushbackInstr(INSTR_SARR,T1,0,T0);
+    pushbackInstr(INSTR_JAL,0,0,0,name);
+    pushbackInstr(INSTR_ADD,RBQ,CON1,RSP);
+    pushbackInstr(INSTR_RARR,0,RSP,RBQ);
+    pushbackInstr(INSTR_SARR,RAX,0,RSP);    
     for(Expression *exp:arguments)
         delete exp;
 }
@@ -256,6 +288,7 @@ void PrintStatement::codeGenerate(){
     pushbackInstr(INSTR_RARR,0,RSP,T0);
     pushbackInstr(INSTR_PUTI,T0,0,0);
     pushbackInstr(INSTR_ADD,RSP,CON1,RSP);
+    delete value;
 }
 
 void ReadStatement::codeGenerate(){
@@ -264,6 +297,7 @@ void ReadStatement::codeGenerate(){
     pushbackInstr(INSTR_RARR,0,RSP,T1);
     pushbackInstr(INSTR_SARR,T0,0,T1);
     pushbackInstr(INSTR_ADD,RSP,CON1,RSP);
+    delete addr;
 }
 
 void PutcharStatement::codeGenerate(){
@@ -271,4 +305,49 @@ void PutcharStatement::codeGenerate(){
     pushbackInstr(INSTR_RARR,0,RSP,T0);
     pushbackInstr(INSTR_PUTC,T0,0,0);
     pushbackInstr(INSTR_ADD,RSP,CON1,RSP);
+    delete value;
+}
+
+void ReturnStatement::codeGenerate(){
+    if(value)   
+        nodeConcatenate(this,value);
+    pushbackInstr(INSTR_RARR,0,RSP,RAX);
+    pushbackInstr(INSTR_RARR,0,RBQ,T0);
+    pushbackInstr(INSTR_JAL,T0,0,0);
+    delete value;
+}
+
+void WhileStatement::codeGenerate(){
+    pushbackInstr(INSTR_JAL,0,0,0);
+    Instruction* f1 = back;
+    nodeConcatenate(this,body);
+    Instruction* bodyInstr = f1->next;
+    Instruction* f2 = back;
+    nodeConcatenate(this,condition);
+    Instruction* conditionInstr = f2->next;
+    pushbackInstr(INSTR_RARR,0,RSP,T0);
+    pushbackInstr(INSTR_ADD,RSP,CON1,RSP);
+    pushbackInstr(INSTR_JALE,T0,0,0);
+    Instruction* f3 = back;
+    pushbackInstr(INSTR_LI,0,CON,0);//Occupy
+    jmpInstr[f1] = conditionInstr;
+    jmpInstr[f3] = bodyInstr;
+    breakJmp.push_back(back);
+    continueJmp.push_back(conditionInstr);
+    delete condition,body;
+}
+
+void IfStatement::codeGenerate(){
+    nodeConcatenate(this,condition);
+    pushbackInstr(INSTR_RARR,0,RSP,T0);
+    pushbackInstr(INSTR_ADD,RSP,CON1,RSP);
+    pushbackInstr(INSTR_JALE,T0,0,0);
+    Instruction* f1 = back;
+    if(body2) nodeConcatenate(this,body2);
+    pushbackInstr(INSTR_JAL,0,0,0);
+    Instruction* f2 = back;
+    nodeConcatenate(this,body1);
+    pushbackInstr(INSTR_LI,0,CON,0);
+    jmpInstr[f1] = f2->next;
+    jmpInstr[f2] = back;
 }

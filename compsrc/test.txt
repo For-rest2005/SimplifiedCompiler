@@ -4,7 +4,7 @@ void printf();
 int main(){
     if(1){
         a;
-    }else if(){
+    }else if(2){
         a;
     }else{
         a;

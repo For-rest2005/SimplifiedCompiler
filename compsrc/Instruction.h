@@ -6,8 +6,8 @@ class Instruction{
     int op;
     int x,y,z;
 public:
+    int id;
     Instruction *next;
-    std::string label;
     Instruction();
     Instruction(int,int,int,int,Instruction*);
     Instruction(int,int,int,int);
@@ -15,7 +15,7 @@ public:
     Instruction(int,int,int,int,const std::string&,Instruction*);
     ~Instruction() = default;
     void print();
-    void replaceLable(int);
+    void replaceJmptag(int);
 };
 
 #endif

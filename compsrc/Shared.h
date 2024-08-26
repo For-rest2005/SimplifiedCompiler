@@ -4,9 +4,9 @@
 #include "ASTNode.h"
 #include "Expression.h"
 #include "Statement.h"
-#include "MemoryAllocator.h"
 #include "SymbolTable.h"
 #include "Instruction.h"
+#include "FakeLinker.h"
 #include <stack>
 #include <string>
 #include <vector>

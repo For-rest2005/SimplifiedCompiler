@@ -2,10 +2,6 @@
 
 Instruction::Instruction(int _op,int _x,int _y,int _z):next(nullptr),op(_op),x(_x),y(_y),z(_z){}
 Instruction::Instruction(int _op,int _x,int _y,int _z,Instruction *_next):op(_op),x(_x),y(_y),z(_z),next(_next){}
-Instruction::Instruction(int _op,int _x,int _y,int _z,const std::string &_label)
-:label(_label),next(nullptr),op(_op),x(_x),y(_y),z(_z){}
-Instruction::Instruction(int _op,int _x,int _y,int _z,const std::string &_label,Instruction *_next)
-:label(_label),next(_next),op(_op),x(_x),y(_y),z(_z){}
 void Instruction::print(){
     std::cout << op << ' ';
     if(op == 100);
@@ -15,6 +11,9 @@ void Instruction::print(){
         std::cout << x << ' ' << y << ' ';
     else 
         std::cout << x << ' ' << y << ' ' << z << ' ';
-    if(next) next->print();
+    //if(next) next->print();
 }
-void Instruction::replaceLable(int _x){x = _x;}
+void Instruction::replaceJmptag(int _x){
+    if(op == 20) y = _x;
+    else x = _x;
+}

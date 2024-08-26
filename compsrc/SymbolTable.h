@@ -2,29 +2,31 @@
 #define _SYMBOLTABLE_H_
 #include "Shared.h"
 
+// These symbol tables are only used in the codegeneration process
+
 class LocalVarTable{
 private:
-    std::vector<std::unordered_map<std::string,int>> addrTbl;
-    std::vector<std::unordered_map<std::string,int>>typeTbl;
-    std::vector<int> curAddr;
+    std::vector<std::unordered_map<std::string,std::pair<int,int>>> varTbl;
+    // The first part is data type, the second part is variable address
+    std::stack<int> curAddr;
+    // The top of curAddr always points to the next place of the stack
 public:
-    void addVar(std::string,int,int);
-    std::pair<int,int> getVar(std::string);
+    bool checkScope(const std::string&);
+    void addVar(const std::string&,int,int);
+    std::pair<int,int> getVar(const std::string&);
     bool empty();
-    bool checkScope(std::string);
     void enterScope();
     void exitScope();
 };
 
 class GlobalVarTable{
 private:
-    std::unordered_map<std::string,int> addrTbl;
-    std::unordered_map<std::string,int> typeTbl;
+    std::unordered_map<std::string,std::pair<int,int>> varTbl;
     int curAddr;
 public:
-    void addVar(std::string,int,int);
-    std::pair<int,int> getVar(std::string);
-    bool checkScope(std::string);
+    bool checkScope(const std::string&);
+    void addVar(const std::string&,int,int);
+    std::pair<int,int> getVar(const std::string&);
 };
 //You need to realize that local varibles only have relative memory address while global varibles have absolute address
 class VarTable{
@@ -32,17 +34,30 @@ private:
     GlobalVarTable global;
     LocalVarTable local;
 public:
-    void addVar(std::string,int,int);
-    std::pair<int,int> getVar(std::string,bool&);
+    void addVar(const std::string&,int,int);
+    std::pair<int,int> getVar(const std::string&,bool&);
     //return {datetype,addr}
     //We ensure that the datatype getVar() returns is a "var" type
-    bool checkScope(std::string);
+    bool checkScope(const std::string&);
     void enterScope();
     void exitScope();
 };
 
-class FunctionTable{
+class FunctionData{
+public:
+    int returnType;
+    std::vector<std::pair<int,std::string>> arguments;
+    FunctionData(int,const std::vector<std::pair<int,std::string>>&);
+};
 
+class FunctionTable{
+protected:
+    //Each function has its return type, name and its arguments(including data type and name)
+    std::unordered_map<std::string,FunctionData> funTbl;
+public:
+    FunctionTable() = default;
+    FunctionData getFun(const std::string&);
+    void addFun(const std::string&,const FunctionData&);
 };
 
 #endif
