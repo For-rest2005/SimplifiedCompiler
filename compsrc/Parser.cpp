@@ -17,11 +17,11 @@ int getDataType(){
     return -2;
 }
 
-Statement* getStatementGlobal(){
+GlobalStatement* getStatementGlobal(){
     int dataType = getDataType();
     if(dataType == -1) return nullptr;
     if(dataType == -2) errorReport("Invalid type indicator");
-    Statement *curStatement;
+    GlobalStatement* curStatement;
     Token name = getToken();
     if(name.type() != IDENTIFIER)
         errorReport("Invalid function or varible name");
@@ -99,6 +99,7 @@ Statement* getStatementLocal(){
         buffer = getToken();
         if(buffer.value() == ";")
             return new ReturnStatement(nullptr);
+        unGetToken(buffer);
         Expression *value = parseExp();
         skipTokens();
         curStatement = new ReturnStatement(value);

@@ -61,14 +61,20 @@ void VarTable::addVar(const std::string& _str,int _type,int _size = 1){
     else local.addVar(_str,_type,_size);
 }
 
+void FunctionTable::addFun(const std::string& _str,const FunctionData& funData){
+    // Error may occur here
+    funTbl[_str] = funData;
+}
+
 FunctionData::FunctionData(int _returnType,const std::vector<std::pair<int,std::string>>& _arguments)
 :returnType(_returnType),arguments(_arguments){}
 FunctionData FunctionTable::getFun(const std::string& _str){
     // Error may occur here
     return funTbl.at(_str);
 }
-void FunctionTable::addFun(const std::string& _str,const FunctionData& funData){
-    // Error may occur here
-    funTbl[_str] = funData;
+FunctionData::FunctionData(const FunctionData& obj){
+    returnType = obj.returnType;
+    arguments = obj.arguments;
 }
+
 

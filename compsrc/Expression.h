@@ -1,15 +1,14 @@
 #ifndef _EXPRESSION_H_
 #define _EXPRESSION_H_
 #include "Shared.h"
-#include <unordered_map>
-#include <functional>
+#include "ASTNode.h"
 
 class Expression:public ASTNode{
 public:
     int dataType;
     bool globalBit;
     Expression(int);
-    Expression();
+    Expression() = default;
     virtual ~Expression() = default;
     virtual void codeGenerate() = 0;
     virtual void codeGenerateOptional();
@@ -64,7 +63,7 @@ protected:
 public:
     OperationExp(const std::string&);
     virtual ~OperationExp() = default;
-    virtual void codeGenerate();
+    virtual void codeGenerate() = 0;
     //virtual void print() = 0;
 };
 

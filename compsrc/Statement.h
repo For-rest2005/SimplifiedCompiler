@@ -2,16 +2,72 @@
 #define _STATEMENT_H_
 #include "Shared.h"
 #include "Expression.h"
-#include <vector>
+#include "ASTNode.h"
+
 class Statement:public ASTNode{
 public:
     virtual ~Statement() = default;
-    virtual void codeGenerate();
+    virtual void codeGenerate() = 0;
 };
 
 class GlobalStatement:public Statement{
 public:
-    GetStatementGlobal();
+    GlobalStatement *next;
+    GlobalStatement() = default;
+    GlobalStatement(GlobalStatement*);
+    virtual ~GlobalStatement() = default;
+    virtual void codeGenerate() = 0;
+};
+
+class Program:public GlobalStatement{
+public:
+    Program() = default;
+    virtual ~Program();
+    virtual void codeGenerate();
+};
+
+class GlobalVarDeclaration:public GlobalStatement{
+protected:
+    int dataType;
+    std::string varName;
+public:
+    GlobalVarDeclaration(int,std::string,GlobalStatement*);
+    virtual ~GlobalVarDeclaration();
+    virtual void codeGenerate();
+};
+
+class GlobalArrayDeclaration:public GlobalStatement{
+protected:
+    int dataType;
+    std::string varName;
+    int size;
+public:
+    GlobalArrayDeclaration(int,std::string,int,GlobalStatement*);
+    virtual ~GlobalArrayDeclaration();
+    virtual void codeGenerate();
+};
+
+class FunctionDefinition:public GlobalStatement{
+protected:
+    int returnDataType;
+    std::vector<std::pair<int,std::string>> arguments;// type and name
+    std::string funName;
+    Statement *body;
+public:
+    FunctionDefinition(int,std::string,std::vector<std::pair<int,std::string>>&,Statement*,GlobalStatement*);
+    virtual ~FunctionDefinition();
+    virtual void codeGenerate();
+};
+
+class FunctionDeclaration:public GlobalStatement{
+protected:
+    int returnDataType;
+    std::vector<std::pair<int,std::string>> arguments;// type and name
+    std::string funName;
+public:
+    FunctionDeclaration(int,std::string,std::vector<std::pair<int,std::string>>&,GlobalStatement*);
+    virtual ~FunctionDeclaration();
+    virtual void codeGenerate();
 };
 
 class WhileStatement:public Statement{
@@ -34,37 +90,6 @@ public:
     virtual void codeGenerate();
 };
 
-class Program:public Statement{
-public:
-    Statement *next;
-    Program();
-    virtual ~Program();
-    virtual void codeGenerate();
-};
-
-class GlobalVarDeclaration:public Statement{
-protected:
-    int dataType;
-    Statement *next;
-    std::string varName;
-public:
-    GlobalVarDeclaration(int,std::string,Statement*);
-    virtual ~GlobalVarDeclaration();
-    virtual void codeGenerate();
-};
-
-class GlobalArrayDeclaration:public Statement{
-protected:
-    int dataType;
-    Statement *next;
-    std::string varName;
-    int size;
-public:
-    GlobalArrayDeclaration(int,std::string,int,Statement*);
-    virtual ~GlobalArrayDeclaration();
-    virtual void codeGenerate();
-};
-
 class LocalVarDeclaration:public Statement{
 protected:
     int dataType;
@@ -83,31 +108,6 @@ protected:
 public:
     LocalArrayDeclaration(int,std::string,int);
     virtual ~LocalArrayDeclaration() = default;
-    virtual void codeGenerate();
-};
-
-class FunctionDefinition:public Statement{
-protected:
-    int returnDataType;
-    std::vector<std::pair<int,std::string>> arguments;// type and name
-    std::string funName;
-    Statement *body;
-    Statement *next;
-public:
-    FunctionDefinition(int,std::string,std::vector<std::pair<int,std::string>>&,Statement*,Statement*);
-    virtual ~FunctionDefinition();
-    virtual void codeGenerate();
-};
-
-class FunctionDeclaration:public Statement{
-protected:
-    int returnDataType;
-    std::vector<std::pair<int,std::string>> arguments;// type and name
-    std::string funName;
-    Statement *next;
-public:
-    FunctionDeclaration(int,std::string,std::vector<std::pair<int,std::string>>&,Statement*);
-    virtual ~FunctionDeclaration();
     virtual void codeGenerate();
 };
 

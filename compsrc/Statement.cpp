@@ -1,18 +1,18 @@
 #include "Statement.h"
 
-GlobalVarDeclaration::GlobalVarDeclaration(int _dataType,std::string _varName,Statement *_next):dataType(_dataType),varName(_varName),next(_next){}
+GlobalVarDeclaration::GlobalVarDeclaration(int _dataType,std::string _varName,GlobalStatement *_next):dataType(_dataType),varName(_varName),GlobalStatement(_next){}
 GlobalVarDeclaration::~GlobalVarDeclaration(){delete next;}
 
-GlobalArrayDeclaration::GlobalArrayDeclaration(int _dataType,std::string _varName,int _size,Statement *_next):
-    dataType(_dataType),varName(_varName),size(_size),next(_next){}
+GlobalArrayDeclaration::GlobalArrayDeclaration(int _dataType,std::string _varName,int _size,GlobalStatement *_next):
+    dataType(_dataType),varName(_varName),size(_size),GlobalStatement(_next){}
 GlobalArrayDeclaration::~GlobalArrayDeclaration(){delete next;}
 
-FunctionDefinition::FunctionDefinition(int _returnDataType,std::string _funName,std::vector<std::pair<int,std::string>> &_arguments,Statement*_body,Statement*_next)
-:returnDataType(_returnDataType),funName(_funName),arguments(_arguments),body(_body),next(_next){}
+FunctionDefinition::FunctionDefinition(int _returnDataType,std::string _funName,std::vector<std::pair<int,std::string>> &_arguments,Statement*_body,GlobalStatement*_next)
+:returnDataType(_returnDataType),funName(_funName),arguments(_arguments),body(_body),GlobalStatement(_next){}
 FunctionDefinition::~FunctionDefinition(){delete body,next;}
 
-FunctionDeclaration::FunctionDeclaration(int _returnDataType,std::string _funName,std::vector<std::pair<int,std::string>> &_arguments,Statement*_next)
-:returnDataType(_returnDataType),funName(_funName),arguments(_arguments),next(_next){}
+FunctionDeclaration::FunctionDeclaration(int _returnDataType,std::string _funName,std::vector<std::pair<int,std::string>> &_arguments,GlobalStatement*_next)
+:returnDataType(_returnDataType),funName(_funName),arguments(_arguments),GlobalStatement(_next){}
 FunctionDeclaration::~FunctionDeclaration(){delete next;}
 
 WhileStatement::WhileStatement(Expression *_condition,Statement *_body):condition(_condition),body(_body){}
@@ -27,6 +27,8 @@ Scope::~Scope(){
         delete each;
     }
 }
+
+GlobalStatement::GlobalStatement(GlobalStatement* _next):next(_next){}
 
 ExpStatement::ExpStatement(Expression *_body):body(_body){}
 ExpStatement::~ExpStatement(){delete body;}

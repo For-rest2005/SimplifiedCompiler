@@ -1,6 +1,7 @@
 #include"Expression.h"
 
 Expression::Expression(int _dataType):dataType(_dataType){}
+void Expression::codeGenerateOptional(){}
 
 OperationExp::OperationExp(const std::string &_op):op(_op){}
 

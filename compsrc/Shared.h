@@ -1,12 +1,6 @@
 #ifndef _SHARED_H_
 #define _SHARED_H_
-#include "Lexer.h"
-#include "ASTNode.h"
-#include "Expression.h"
-#include "Statement.h"
-#include "SymbolTable.h"
-#include "Instruction.h"
-#include "FakeLinker.h"
+#include <set>
 #include <stack>
 #include <string>
 #include <vector>

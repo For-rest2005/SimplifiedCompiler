@@ -1,12 +1,5 @@
 int global;
-void printf();
 
 int main(){
-    if(1){
-        a;
-    }else if(2){
-        a;
-    }else{
-        a;
-    }
+    return 0;
 }

@@ -1,8 +1,9 @@
 #ifndef _ASTNODE_H_
 #define _ASTNODE_H_
 
-#include<string>
-#include"Shared.h"
+#include "Instruction.h"
+#include "SymbolTable.h"
+#include "Shared.h"
 
 extern std::unordered_map<std::string,Instruction*> labelPos;
 extern std::unordered_map<Instruction*,std::string> jmpLabel;

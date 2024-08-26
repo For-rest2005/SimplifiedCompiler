@@ -98,7 +98,6 @@ Token getToken(){
     }else if(charTypeGet(ch) == INVALID){
         errorReport("Invalid character");
     }
-    std::cerr << type << ' ' << buffer << std::endl;
     return Token(type,buffer);
 }
 

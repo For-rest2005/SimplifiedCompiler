@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 
 project(test)
 
-file(GLOB SRC_FILES ${CMAKE_CURRENT_SOURCE_DIR}/compsrc/shared.cpp )
+file(GLOB SRC_FILES ${CMAKE_CURRENT_SOURCE_DIR}/compsrc/*.cpp )
 set(CMAKE_CXX_STANDARD 14)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/output)
 

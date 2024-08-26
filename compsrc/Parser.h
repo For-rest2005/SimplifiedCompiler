@@ -2,9 +2,12 @@
 #define _PARSER_H_
 
 #include "Shared.h"
+#include "Statement.h"
+#include "Lexer.h"
+#include "Expression.h"
 
 int getDataType();
-Statement* getStatementGlobal();
+GlobalStatement* getStatementGlobal();
 Statement* getStatementLocal();
 Expression* parseExp();
 

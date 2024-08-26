@@ -1,15 +1,10 @@
-// #include "Lexer.h"
 #include <bits/stdc++.h>
 using namespace std;
-
-// string tbl[] = {"EMPTY","KEYWORD","IDENTIFIER","INTCONSTANT","OPERATOR","STRINGCONSTANT","SEMICOLON"};
+#include "Shared.h"
+#include "FakeLinker.h"
 
 int main(){
-    // Token curToken;
-    // freopen("test.txt","r",stdin);
-    // while((curToken = getToken()).type() != ENDPOINT){
-    //     cout << tbl[curToken.type()] << ' ' << curToken.value() << endl;
-    // }
-    cout << stoi("+2323");
+    freopen("test.txt","r",stdin);
+    linker();
     return 0;
 }

@@ -47,7 +47,9 @@ class FunctionData{
 public:
     int returnType;
     std::vector<std::pair<int,std::string>> arguments;
+    FunctionData() = default;
     FunctionData(int,const std::vector<std::pair<int,std::string>>&);
+    FunctionData(const FunctionData&);
 };
 
 class FunctionTable{

@@ -1,4 +1,8 @@
 #include "Shared.h"
+#include "Instruction.h"
+#include "Statement.h"
+#include "Expression.h"
+#include "ASTNode.h"
 
 #define INSTR_LI 0
 #define INSTR_SARR 1
@@ -48,6 +52,8 @@ const static std::unordered_map<std::string,int> opCoInstr = {
 extern std::unordered_map<std::string,Instruction*> labelPos;
 extern std::unordered_map<Instruction*,std::string> jmpLabel;
 extern std::unordered_map<Instruction*,Instruction*> jmpInstr;
+extern std::vector<Instruction*> breakJmp;
+extern std::vector<Instruction*> continueJmp;
 
 inline void concatenate(Instruction *&preback,Instruction *front,Instruction *back){
     preback->next = front;
@@ -132,12 +138,13 @@ void ConstantExp::codeGenerate(){
     case DATATYPE_INT:
         stackPushConstant(this,stoi(value));
         break;
-    case STRINGCONSTANT:
+    case DATATYPE_STRINGCONSTANT:
         stackPushConstant(this,0);
         for(int i = (int)value.size()-1;i > 0;i--)
             stackPushConstant(this,value[i]);
         break;
     }
+    std::cout << "constant:" << value << std::endl;
 }
 
 void UnaryOp::codeGenerate(){
@@ -350,6 +357,7 @@ void IfStatement::codeGenerate(){
     pushbackInstr(INSTR_LI,0,CON,0);
     jmpInstr[f1] = f2->next;
     jmpInstr[f2] = back;
+    delete body1,body2,condition;
 }
 
 void GlobalVarDeclaration::codeGenerate(){
@@ -364,7 +372,7 @@ void LocalVarDeclaration::codeGenerate(){
     varEnvir.addVar(varName,dataType,1);
 }
 
-void GlobalArrayDeclaration::codeGenerate(){
+void LocalArrayDeclaration::codeGenerate(){
     varEnvir.addVar(varName,dataType,size);
 }
 
@@ -380,6 +388,7 @@ void FunctionDefinition::codeGenerate(){
     for(auto tmp:arguments)
         varEnvir.addVar(tmp.second,tmp.first,1);
     nodeConcatenate(this,body);
+    std::cout << funName << std::endl;
     if(labelPos.find(funName) != labelPos.end())
         errorReport("Redefine function "+funName);
     labelPos[funName] = this->front->next;
