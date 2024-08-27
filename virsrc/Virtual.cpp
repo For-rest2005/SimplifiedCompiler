@@ -145,6 +145,9 @@ int main(){
     while(true){
         cout << rip << ' ' << cmdlst[rip][0] << ' ' << cmdlst[rip][1]<< ' ' << cmdlst[rip][2]<< ' ' << cmdlst[rip][3] << '\n';
         cmdTable.at(cmdlst[rip][0])(cmdlst[rip][1],cmdlst[rip][2],cmdlst[rip][3]);
+        // for(int i = 200;i <= 210;i++)
+        //     cout << (char)mem[i];
+        // cout << '\n';
         for(int i = mem[2];i <= mem[1];i++)
             cout << mem[i] << ' ';
         cout << '\n';

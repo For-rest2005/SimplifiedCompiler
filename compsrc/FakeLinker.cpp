@@ -9,15 +9,17 @@ std::vector<Instruction*> continueJmp;
 static std::vector<int> _breakJmp;
 static std::vector<int> _continueJmp;
 
-int cnt = 0;
 
 inline void concatenate(Instruction *&preback,Instruction *front,Instruction *back){
     preback->next = front;
     preback = back;
 }
 
-inline void nodeConcatenate(ASTNode *cur,ASTNode *next){
+inline void nodeConcatenate(GlobalStatement *program,GlobalStatement *textSeg,GlobalStatement *next){
     next->codeGenerate();
+    GlobalStatement *cur;
+    if(next->deBit) cur = program;
+    else cur = textSeg;
     if(next->front->next) concatenate(cur->back,next->front->next,next->back);
     delete next->front;
 }
@@ -29,8 +31,7 @@ void linker(){
 
     GlobalStatement *cur = program->next;
     while(cur){
-        if(cur->deBit) nodeConcatenate(program,cur);
-        else nodeConcatenate(textSeg,cur);
+        nodeConcatenate(program,textSeg,cur);
         cur = cur->next;
     }
     program->codeGenerate();
