@@ -167,7 +167,7 @@ void ConstantExp::codeGenerate(){
 }
 
 void UnaryOp::codeGenerate(){
-    if(op == "+" || op == "-"){
+    if(op == "+" || op == "-" || op == "!"){
         nodeConcatenate(this,first);
         if(first->dataType == DATATYPE_INT)
             dataType = DATATYPE_INT;

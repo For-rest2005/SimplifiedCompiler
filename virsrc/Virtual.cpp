@@ -120,7 +120,7 @@ const std::map<int,void(*)(int,int,int)> cmdTable = {
     {40,Command40},{50,Command50},{60,Command60},{70,Command70},{100,Command100}
 };
 
-long long cnt = 0;
+// long long cnt = 0;
 
 using namespace std;
 int main(){
@@ -143,16 +143,16 @@ int main(){
     }
     rip = 0;
     while(true){
-        cout << rip << ' ' << cmdlst[rip][0] << ' ' << cmdlst[rip][1]<< ' ' << cmdlst[rip][2]<< ' ' << cmdlst[rip][3] << '\n';
+        // cout << rip << ' ' << cmdlst[rip][0] << ' ' << cmdlst[rip][1]<< ' ' << cmdlst[rip][2]<< ' ' << cmdlst[rip][3] << '\n';
         cmdTable.at(cmdlst[rip][0])(cmdlst[rip][1],cmdlst[rip][2],cmdlst[rip][3]);
         // for(int i = 200;i <= 210;i++)
         //     cout << (char)mem[i];
         // cout << '\n';
-        for(int i = mem[2];i <= mem[1];i++)
-            cout << mem[i] << ' ';
-        cout << '\n';
-        cout << "RBQ:" << mem[1] << " RSP:" << mem[2] << " RAX:" << mem[3] << " T0:" << mem[4] << " T1:" << mem[5] <<'\n';
-        if(cnt++ > 200) break;
+        // for(int i = mem[2];i <= mem[1];i++)
+        //     cout << mem[i] << ' ';
+        // cout << '\n';
+        // cout << "RBQ:" << mem[1] << " RSP:" << mem[2] << " RAX:" << mem[3] << " T0:" << mem[4] << " T1:" << mem[5] <<'\n';
+        // if(cnt++ > 200) break;
     }
     return 0;
 }

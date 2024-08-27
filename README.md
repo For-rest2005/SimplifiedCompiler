@@ -1,3 +1,3 @@
 # Simplified Compiler
-This programming project is to inplement a simplified compiler. This compiler is an extension of the final assignment of NJU information science practics course.
+This programming project is to implement a simplified compiler. This compiler is an extension of the final assignment of NJU information science practics course.
 To be continued...
