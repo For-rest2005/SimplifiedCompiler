@@ -7,8 +7,8 @@ void printf(int *a){
     }
 }
 
+int a[20];
 int main(){
-    int a[20];
     a = "Hello World\n";
     printf(a);
     return 0;
