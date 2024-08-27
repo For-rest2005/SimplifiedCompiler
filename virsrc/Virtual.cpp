@@ -98,7 +98,7 @@ void Command40(int x = 0,int y = 0,int z = 0){
     rip = mem[x];
 }
 void Command50(int x = 0,int y = 0,int z = 0){
-    std::cout << mem[x] << ' ';
+    std::cout << mem[x];
     rip++;
 }
 void Command60(int x = 0,int y = 0,int z = 0){
@@ -106,11 +106,10 @@ void Command60(int x = 0,int y = 0,int z = 0){
     rip++;
 }
 void Command70(int x = 0,int y = 0,int z = 0){
-    std::cout << (char)mem[x] << ' ';
+    std::cout << (char)mem[x];
     rip++;
 }
 void Command100(int x = 0,int y = 0,int z = 0){
-    std::cerr << "successfully exit" << std::endl;
     exit(1);
 }
 
@@ -121,8 +120,9 @@ const std::map<int,void(*)(int,int,int)> cmdTable = {
     {40,Command40},{50,Command50},{60,Command60},{70,Command70},{100,Command100}
 };
 
+// long long cnt = 0;
+
 using namespace std;
-long long cnt = 0;
 int main(){
     int tt,op,x,y,z;
     cin >> tt;
@@ -143,10 +143,13 @@ int main(){
     }
     rip = 0;
     while(true){
-        // cout << rip << ' ' << cmdlst[rip][0] << ' ' << cmdlst[rip][1]<< ' ' << cmdlst[rip][2]<< ' ' << cmdlst[rip][3] << ' ' << mem[49999] << '\n';
+        // cout << rip << ' ' << cmdlst[rip][0] << ' ' << cmdlst[rip][1]<< ' ' << cmdlst[rip][2]<< ' ' << cmdlst[rip][3] << '\n';
         cmdTable.at(cmdlst[rip][0])(cmdlst[rip][1],cmdlst[rip][2],cmdlst[rip][3]);
-        cnt++;
-        if(cnt > 100) return 0;
+        // for(int i = mem[2];i <= mem[1];i++)
+        //     cout << mem[i] << ' ';
+        // cout << '\n';
+        // cout << "RBQ:" << mem[1] << " RSP:" << mem[2] << " RAX:" << mem[3] << " T0:" << mem[4] << " T1:" << mem[5] <<'\n';
+        // if(cnt++ > 120) break;
     }
     return 0;
 }

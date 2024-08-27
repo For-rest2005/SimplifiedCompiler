@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include <iostream>
 #include <functional>
+#include <algorithm>
 
 #define EMPTY 0
 #define KEYWORD 1
@@ -22,6 +23,7 @@
 #define DATATYPE_INT 1
 #define DATATYPE_INTPOINTER 2
 #define DATATYPE_STRINGCONSTANT 3
+
 
 inline void errorReport(const std::string& errorData){
     std::cerr << "ERROR:" << errorData << std::endl;

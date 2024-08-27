@@ -62,7 +62,8 @@ inline void concatenate(Instruction *&preback,Instruction *front,Instruction *ba
 
 inline void nodeConcatenate(ASTNode *cur,ASTNode *next){
     next->codeGenerate();
-    if(next->front->next) concatenate(cur->back,next->front->next,next->back);
+    if(next->front->next)
+        concatenate(cur->back,next->front->next,next->back);
     delete next->front;
 }
 
@@ -75,7 +76,8 @@ inline void stackPushConstant(Expression *exp,int value){
 
 inline void nodeConcatenateOptional(ASTNode *cur,Expression *next){
     next->codeGenerateOptional();
-    concatenate(cur->back,next->front->next,next->back);
+    if(next->front->next) 
+        concatenate(cur->back,next->front->next,next->back);
     delete next->front;
 }
 
@@ -95,7 +97,13 @@ void VariableExp::codeGenerate(){
 void VariableExp::codeGenerateOptional(){
     auto varinfo = varEnvir.getVar(name,globalBit);
     dataType = varinfo.first;
-    stackPushConstant(this,varinfo.second);
+    if(globalBit) stackPushConstant(this,varinfo.second);
+    else{
+        pushbackInstr(INSTR_SUB,RSP,CON1,RSP);
+        pushbackInstr(INSTR_LI,varinfo.second,CON,0);
+        pushbackInstr(INSTR_SUB,RBQ,CON,T0);
+        pushbackInstr(INSTR_SARR,T0,0,RSP);
+    }
 }
 
 void ArrayExp::codeGenerate(){
@@ -106,12 +114,14 @@ void ArrayExp::codeGenerate(){
     else errorReport("Invalid array expression");
     if(globalBit){
         pushbackInstr(INSTR_LI,varinfo.second,CON,0);
-        pushbackInstr(INSTR_RARR,0,RSP,T0);   
+        pushbackInstr(INSTR_RARR,0,CON,CON);
+        pushbackInstr(INSTR_RARR,0,RSP,T0);
         pushbackInstr(INSTR_ADD,T0,CON,T0);
+        pushbackInstr(INSTR_RARR,0,T0,T0);
         pushbackInstr(INSTR_SARR,T0,0,RSP);
     }
     else{
-        pushbackInstr(INSTR_RARR,RBQ,-varinfo.second,T0);
+        pushbackInstr(INSTR_RARR,-varinfo.second,RBQ,T0);
         pushbackInstr(INSTR_RARR,0,RSP,T1);
         pushbackInstr(INSTR_ADD,T0,T1,T0);
         pushbackInstr(INSTR_RARR,0,T0,T0);
@@ -126,9 +136,12 @@ void ArrayExp::codeGenerateOptional(){
     if(varinfo.first == DATATYPE_INTPOINTER) 
         dataType = DATATYPE_INT;
     else errorReport("Invalid array expression");
-    pushbackInstr(INSTR_LI,varinfo.second,CON,0);
+    pushbackInstr(INSTR_LI,varinfo.second,T1,0);
+    if(!globalBit)
+        pushbackInstr(INSTR_SUB,RBQ,T1,T1);
+    pushbackInstr(INSTR_RARR,0,T1,T1);
     pushbackInstr(INSTR_RARR,0,RSP,T0);
-    pushbackInstr(INSTR_ADD,CON,T0,T0);
+    pushbackInstr(INSTR_ADD,T1,T0,T0);
     pushbackInstr(INSTR_SARR,T0,0,RSP);
     delete index;
 }
@@ -140,9 +153,15 @@ void ConstantExp::codeGenerate(){
         stackPushConstant(this,stoi(value));
         break;
     case DATATYPE_STRINGCONSTANT:
-        stackPushConstant(this,0);
-        for(int i = (int)value.size()-1;i > 0;i--)
-            stackPushConstant(this,value[i]);
+        pushbackInstr(INSTR_LI,value.size()+1,CON,0);
+        pushbackInstr(INSTR_SUB,RSP,CON,RSP);
+        pushbackInstr(INSTR_MOV,RSP,T0,0);
+        for(int i = 0;i < value.size();i++){
+            pushbackInstr(INSTR_LI,(int)value[i],CON,0);
+            pushbackInstr(INSTR_SARR,CON,0,T0);
+            pushbackInstr(INSTR_ADD,T0,CON1,T0);
+        }
+        pushbackInstr(INSTR_SARR,CON0,0,T0);
         break;
     }
 }
@@ -159,24 +178,18 @@ void UnaryOp::codeGenerate(){
         pushbackInstr(INSTR_SARR,T0,0,RSP);
     }
     else if(op == "&"){
-        first->codeGenerateOptional();
+        nodeConcatenateOptional(this,first);
         if(first->dataType == DATATYPE_INT)
-            dataType == DATATYPE_INTPOINTER;
+            dataType = DATATYPE_INTPOINTER;
         else errorReport("Invalid unary operator " + op);
-        concatenate(back,first->front->next,first->back);
-        if(!first->globalBit){
-            pushbackInstr(INSTR_RARR,0,RSP,T0);
-            pushbackInstr(INSTR_SUB,RBQ,T0,T0);
-            pushbackInstr(INSTR_SARR,T0,0,RSP);
-        }
-        delete first->front;
     }
     else{
-        if(first->dataType = DATATYPE_INTPOINTER)
+        // The pointer must store the absolute address
+        nodeConcatenate(this,first);
+        if(first->dataType == DATATYPE_INTPOINTER)
             dataType = DATATYPE_INT;
         else 
             errorReport("Invalid unary operator " + op);
-        nodeConcatenate(this,first);
         pushbackInstr(INSTR_RARR,0,RSP,T0);
         pushbackInstr(INSTR_RARR,0,T0,T0);
         pushbackInstr(INSTR_SARR,T0,0,RSP);
@@ -188,15 +201,13 @@ void BinaryOp::codeGenerate(){
     if(op == "="){
         nodeConcatenate(this,second);
         nodeConcatenateOptional(this,first);
-        if(!first->globalBit){
-            pushbackInstr(INSTR_RARR,0,RSP,T0);
-            pushbackInstr(INSTR_SUB,CON0,T0,T0);
-            pushbackInstr(INSTR_RARR,RBQ,T0,T0);
-        }
+        pushbackInstr(INSTR_RARR,0,RSP,T0);
         pushbackInstr(INSTR_ADD,RSP,CON1,RSP);
+        //T0 stores the absolute address of left variable
         if(first->dataType == DATATYPE_INTPOINTER && second->dataType == DATATYPE_STRINGCONSTANT){
             // In this kind of operation, we store 0 at the top of the stack 
             dataType = DATATYPE_INT;
+            pushbackInstr(INSTR_RARR,0,T0,T0);
             pushbackInstr(INSTR_RARR,0,RSP,T1);
             pushbackInstr(INSTR_JALI,0,0,0,"+5");
             pushbackInstr(INSTR_SARR,T1,0,T0);
@@ -205,9 +216,9 @@ void BinaryOp::codeGenerate(){
             pushbackInstr(INSTR_RARR,0,RSP,T1);
             pushbackInstr(INSTR_JALE,T1,0,0,"-4");
         }
-        else if(first->dataType == second ->dataType){
+        else if(first->dataType == second->dataType){
             dataType = first->dataType;
-            pushbackInstr(INSTR_SARR,0,RSP,T1);
+            pushbackInstr(INSTR_RARR,0,RSP,T1);
             pushbackInstr(INSTR_SARR,T1,0,T0);
             pushbackInstr(INSTR_SARR,T1,0,RSP);
         }
@@ -217,6 +228,10 @@ void BinaryOp::codeGenerate(){
     else if(op == "!=" || op == "<=" || op == ">="){
         nodeConcatenate(this,first);
         nodeConcatenate(this,second);
+        if(first->dataType == DATATYPE_INT && first->dataType == DATATYPE_INT)
+            dataType = DATATYPE_INT;
+        else
+            errorReport("Invalid operator " + op);
         pushbackInstr(INSTR_RARR,0,RSP,T1);
         pushbackInstr(INSTR_ADD,RSP,CON1,RSP);
         pushbackInstr(INSTR_RARR,0,RSP,T0);
@@ -227,18 +242,28 @@ void BinaryOp::codeGenerate(){
     else if(op == ","){
         nodeConcatenate(this,second);
         nodeConcatenate(this,first);
+        dataType = first->dataType;
         pushbackInstr(INSTR_ADD,RSP,CON1,RSP);
     }
     else{
         nodeConcatenate(this,first);
         nodeConcatenate(this,second);
+        bool che1 = (first->dataType == DATATYPE_INT && second->dataType == DATATYPE_INTPOINTER);
+        bool che2 = (first->dataType == DATATYPE_INTPOINTER && second->dataType == DATATYPE_INT);
+        if(first->dataType == DATATYPE_INT && second->dataType == DATATYPE_INT)
+            dataType = DATATYPE_INT;
+        else if((op == "+" && (che1 || che2)) || (op == "-" && che2))
+            dataType = DATATYPE_INTPOINTER; 
+        else
+            errorReport("Invalid operator " + op);
         pushbackInstr(INSTR_RARR,0,RSP,T1);
         pushbackInstr(INSTR_ADD,RSP,CON1,RSP);
         pushbackInstr(INSTR_RARR,0,RSP,T0);
         pushbackInstr(opCoInstr.at(op),T0,T1,T0);
         pushbackInstr(INSTR_SARR,T0,0,RSP);
     }
-    delete first,second;
+    delete first;
+    delete second;
 }
 
 void TernaryOp::codeGenerate(){
@@ -248,6 +273,7 @@ void TernaryOp::codeGenerate(){
     if(op == "?:" ){
         if(second->dataType != third->dataType)
             errorReport("Invalid operator "+op);
+        dataType = second->dataType;
         pushbackInstr(INSTR_RARR,0,RSP,T2);
         pushbackInstr(INSTR_ADD,RSP,CON1,RSP);
         pushbackInstr(INSTR_RARR,0,RSP,T1);
@@ -258,11 +284,13 @@ void TernaryOp::codeGenerate(){
         pushbackInstr(INSTR_JALI,0,0,0,"+2");
         pushbackInstr(INSTR_SARR,T1,0,RSP);
     }
-    delete first,second,third;
+    delete first;
+    delete second;
+    delete third;
 }
 
 void FunctionCall::codeGenerate(){
-    static constexpr int bias = 4;
+    static constexpr int bias = 5;
     pushbackInstr(INSTR_SUB,RSP,CON1,RSP);
     pushbackInstr(INSTR_SARR,RBQ,0,RSP);
     pushbackInstr(INSTR_SUB,RSP,CON1,RSP);
@@ -276,11 +304,11 @@ void FunctionCall::codeGenerate(){
             errorReport("Invalid function call(arguments type mismatch)");
     }
     pushbackInstr(INSTR_LI,arguments.size(),CON,0);
-    pushbackInstr(INSTR_ADD,CON,RSP,T0);
-    pushbackInstr(INSTR_RARR,0,RIP,T1);
+    pushbackInstr(INSTR_ADD,CON,RSP,RBQ);
+    pushbackInstr(INSTR_MOV,RIP,T1,0);
     pushbackInstr(INSTR_LI,bias,CON,0);
     pushbackInstr(INSTR_ADD,CON,T1,T1);
-    pushbackInstr(INSTR_SARR,T1,0,T0);
+    pushbackInstr(INSTR_SARR,T1,0,RBQ);
     pushbackInstr(INSTR_JALI,0,0,0,name);
     pushbackInstr(INSTR_ADD,RBQ,CON1,RSP);
     pushbackInstr(INSTR_RARR,0,RSP,RBQ);
@@ -346,7 +374,8 @@ void WhileStatement::codeGenerate(){
     jmpInstr[f3] = bodyInstr;
     breakJmp.push_back(back);
     continueJmp.push_back(conditionInstr);
-    delete condition,body;
+    delete condition;
+    delete body;
 }
 
 void IfStatement::codeGenerate(){
@@ -362,7 +391,9 @@ void IfStatement::codeGenerate(){
     pushbackInstr(INSTR_LI,0,CON,0);
     jmpInstr[f1] = f2->next;
     jmpInstr[f2] = back;
-    delete body1,body2,condition;
+    delete body1;
+    delete body2;
+    delete condition;
 }
 
 void GlobalVarDeclaration::codeGenerate(){
@@ -370,17 +401,32 @@ void GlobalVarDeclaration::codeGenerate(){
 }
 
 void GlobalArrayDeclaration::codeGenerate(){
+    int addr,p;
     if(dataType == DATATYPE_INT)
-        varEnvir.addVar(varName,DATATYPE_INTPOINTER,size);
+        addr = varEnvir.addVar("."+varName,DATATYPE_INT,size);
+    p = varEnvir.addVar(varName,DATATYPE_INTPOINTER,1);
+    pushbackInstr(INSTR_LI,addr,CON,0);
+    pushbackInstr(INSTR_LI,p,T0,0);
+    pushbackInstr(INSTR_SARR,CON,0,T0);
+    //absolute address
 }
 
 void LocalVarDeclaration::codeGenerate(){
     varEnvir.addVar(varName,dataType,1);
+    pushbackInstr(INSTR_SUB,RSP,CON1,RSP);
 }
 
 void LocalArrayDeclaration::codeGenerate(){
+    int addr,p;
     if(dataType == DATATYPE_INT)
-        varEnvir.addVar(varName,DATATYPE_INTPOINTER,size);
+        addr = varEnvir.addVar("."+varName,DATATYPE_INT,size);
+    p = varEnvir.addVar(varName,DATATYPE_INTPOINTER,1);
+    pushbackInstr(INSTR_LI,size+1,CON,0);
+    pushbackInstr(INSTR_SUB,RSP,CON,RSP);
+    pushbackInstr(INSTR_LI,addr,CON,0);
+    pushbackInstr(INSTR_SUB,RBQ,CON,T0);
+    pushbackInstr(INSTR_SARR,T0,0,RSP);
+    //Here what we get is a pointer pointing to the head of a block of memory in size of $size
 }
 
 void FunctionDeclaration::codeGenerate(){
@@ -392,8 +438,9 @@ void FunctionDefinition::codeGenerate(){
     FunctionData funData(returnDataType,arguments);
     funEnvir.addFun(funName,funData);
     varEnvir.enterScope();
-    for(auto tmp:arguments)
+    for(auto tmp:arguments){
         varEnvir.addVar(tmp.second,tmp.first,1);
+    }
     nodeConcatenate(this,body);
     if(labelPos.find(funName) != labelPos.end())
         errorReport("Redefine function "+funName);

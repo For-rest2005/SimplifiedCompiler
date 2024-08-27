@@ -1,0 +1,11 @@
+int main(){
+    int a;
+    int b;
+    read &a;
+    read &b;
+    if(a)
+        print b;
+    else 
+        print 114514;
+    return 0;
+}

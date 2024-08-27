@@ -6,8 +6,8 @@ std::unordered_map<Instruction*,Instruction*> jmpInstr;
 std::vector<Instruction*> breakJmp;
 std::vector<Instruction*> continueJmp;
 
-static std::set<int> _breakJmp;
-static std::set<int> _continueJmp;
+static std::vector<int> _breakJmp;
+static std::vector<int> _continueJmp;
 
 int cnt = 0;
 
@@ -43,14 +43,16 @@ void linker(){
         instr = instr->next;
     }
     for(auto tmp:breakJmp)
-        _breakJmp.insert(tmp->id);
+        _breakJmp.push_back(tmp->id);
     for(auto tmp:continueJmp)
-        _continueJmp.insert(tmp->id);
+        _continueJmp.push_back(tmp->id);
+    sort(_breakJmp.begin(),_breakJmp.end());
+    sort(_continueJmp.begin(),_continueJmp.end());
     for(auto tmp:jmpLabel){
         if(tmp.second == ".continue")
-            tmp.first->replaceJmptag(*_continueJmp.upper_bound(tmp.first->id));
+            tmp.first->replaceJmptag(*upper_bound(_continueJmp.begin(),_continueJmp.end(),tmp.first->id));
         else if(tmp.second == ".break")
-            tmp.first->replaceJmptag(*_breakJmp.upper_bound(tmp.first->id));
+            tmp.first->replaceJmptag(*upper_bound(_breakJmp.begin(),_breakJmp.end(),tmp.first->id));
         else if(tmp.second.front() == '+' || tmp.second.front() == '-')
             tmp.first->replaceJmptag(tmp.first->id+stoi(tmp.second));
         else
@@ -58,8 +60,8 @@ void linker(){
     }
     for(auto tmp:jmpInstr)
         tmp.first->replaceJmptag(tmp.second->id);
-    instr = program->front->next;
     std::cout << id << std::endl;
+    instr = program->front->next;
     while(instr){
         instr->print();
         instr = instr->next;

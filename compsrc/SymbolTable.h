@@ -12,7 +12,7 @@ private:
     // The top of curAddr always points to the next place of the stack
 public:
     bool checkScope(const std::string&);
-    void addVar(const std::string&,int,int);
+    int addVar(const std::string&,int,int);
     std::pair<int,int> getVar(const std::string&);
     bool empty();
     void enterScope();
@@ -24,8 +24,9 @@ private:
     std::unordered_map<std::string,std::pair<int,int>> varTbl;
     int curAddr;
 public:
+    GlobalVarTable();
     bool checkScope(const std::string&);
-    void addVar(const std::string&,int,int);
+    int addVar(const std::string&,int,int);
     std::pair<int,int> getVar(const std::string&);
 };
 //You need to realize that local varibles only have relative memory address while global varibles have absolute address
@@ -34,7 +35,7 @@ private:
     GlobalVarTable global;
     LocalVarTable local;
 public:
-    void addVar(const std::string&,int,int);
+    int addVar(const std::string&,int,int);
     std::pair<int,int> getVar(const std::string&,bool&);
     //return {datetype,addr}
     //We ensure that the datatype getVar() returns is a "var" type

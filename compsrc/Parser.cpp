@@ -37,14 +37,18 @@ GlobalStatement* getStatementGlobal(){
     else if(op.value() == "("){
         std::vector<std::pair<int,std::string>> typeNameList;
         int argVarType;
-        while(true){
-            Token buffer = getToken();
-            if(buffer.value() == ")")
-                break;
-            argVarType = getDataType();
-            Token varName;
-            varName = getToken();
-            typeNameList.push_back({argVarType,varName.value()});
+        Token buffer = getToken();
+        if(buffer.value() != ")"){
+            unGetToken(buffer);
+            while(true){
+                if(buffer.value() == ")")
+                    break;
+                argVarType = getDataType();
+                Token varName;
+                varName = getToken();
+                typeNameList.push_back({argVarType,varName.value()});
+                buffer = getToken();
+            }
         }
         op = getToken();
         if(op.value() == "{"){
@@ -182,11 +186,15 @@ Expression *_parseExp16(){
     }
     else if(buffer.value() == "("){
         std::vector<Expression*> arguments; 
-        while(true){
-            buffer = getToken();
-            if(buffer.value() == ")")
-                return new FunctionCall(name.value(),arguments);
-            arguments.push_back(_parseExp2());
+        buffer = getToken();
+        if(buffer.value() != ")"){
+            unGetToken(buffer);
+            while(true){
+                if(buffer.value() == ")")
+                    return new FunctionCall(name.value(),arguments);
+                arguments.push_back(_parseExp2());
+                buffer = getToken();
+            }
         }
     }
     else{

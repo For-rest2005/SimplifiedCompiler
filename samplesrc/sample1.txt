@@ -1,0 +1,12 @@
+int add(int a,int b){
+    return a+b;
+}
+
+int main(){
+    int a;
+    int b;
+    read &a;
+    read &b;
+    print add(a,b);
+    return 0;
+}

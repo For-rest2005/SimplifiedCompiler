@@ -1,9 +1,9 @@
 #ifndef _LEXER_H_
 #define _LEXER_H_
 
-#include "Shared.h"
 #include <unordered_set>
 #include <string>
+#include "Shared.h"
 
 #define EMPTY 0
 #define KEYWORD 1
