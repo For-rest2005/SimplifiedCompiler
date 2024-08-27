@@ -1,0 +1,15 @@
+void printf(int *a){
+    while(*a){
+        if(*a == 111)
+            break;
+        putchar *a;
+        a = a+1;
+    }
+}
+
+int main(){
+    int a[20];
+    a = "Hello World\n";
+    printf(a);
+    return 0;
+}

@@ -12,6 +12,7 @@ public:
 
 class GlobalStatement:public Statement{
 public:
+    bool deBit = 0;
     GlobalStatement *next;
     GlobalStatement() = default;
     GlobalStatement(GlobalStatement*);

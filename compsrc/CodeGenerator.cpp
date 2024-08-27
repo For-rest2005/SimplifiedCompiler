@@ -401,6 +401,7 @@ void GlobalVarDeclaration::codeGenerate(){
 }
 
 void GlobalArrayDeclaration::codeGenerate(){
+    deBit = 1;
     int addr,p;
     if(dataType == DATATYPE_INT)
         addr = varEnvir.addVar("."+varName,DATATYPE_INT,size);
@@ -445,6 +446,8 @@ void FunctionDefinition::codeGenerate(){
     if(labelPos.find(funName) != labelPos.end())
         errorReport("Redefine function "+funName);
     labelPos[funName] = this->front->next;
+    pushbackInstr(INSTR_RARR,0,RBQ,T0);
+    pushbackInstr(INSTR_JAL,T0,0,0);
     varEnvir.exitScope();
     delete body;
 }
@@ -468,11 +471,14 @@ void ContinueStatement::codeGenerate(){
 
 void Program::codeGenerate(){
     static constexpr int stacktop = 50000;
+    static constexpr int bias = 3;
     pushbackInstr(INSTR_LI,stacktop,RSP,0);
     pushbackInstr(INSTR_LI,stacktop,RBQ,0);
     pushbackInstr(INSTR_LI,0,CON0,0);
     pushbackInstr(INSTR_LI,1,CON1,0);
-    pushbackInstr(INSTR_LI,6,stacktop,0);
+    pushbackInstr(INSTR_LI,bias,CON,0);
+    pushbackInstr(INSTR_ADD,RIP,CON,T0);
+    pushbackInstr(INSTR_SARR,T0,0,RSP);
     pushbackInstr(INSTR_JALI,0,0,0,"main");
     pushbackInstr(INSTR_EXIT,0,0,0);
 }

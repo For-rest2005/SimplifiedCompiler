@@ -23,25 +23,29 @@ inline void nodeConcatenate(ASTNode *cur,ASTNode *next){
 }
 
 void linker(){
-    std::cout << "enter linker" << std::endl;
-    Program *program = new Program();
+    Program *program = new Program(),*textSeg = new Program();
     program->next = getStatementGlobal();
-    std::cout << "Parser successfully" << std::endl;
-    program->codeGenerate();
+    std::cerr << "Parser successfully" << std::endl;
+
     GlobalStatement *cur = program->next;
     while(cur){
-        nodeConcatenate(program,cur);
+        if(cur->deBit) nodeConcatenate(program,cur);
+        else nodeConcatenate(textSeg,cur);
         cur = cur->next;
     }
-    std::cout << "Code generation is done" << std::endl;
+    program->codeGenerate();
+    concatenate(program->back,textSeg->front->next,textSeg->back);
+    delete textSeg->front;
+    std::cerr << "Code generation is done" << std::endl;
+
     Instruction *instr = program->front->next;
     int id = 0;
-    delete program->front;
     while(instr){
         instr->id = id;
         id++;
         instr = instr->next;
     }
+
     for(auto tmp:breakJmp)
         _breakJmp.push_back(tmp->id);
     for(auto tmp:continueJmp)
@@ -60,10 +64,16 @@ void linker(){
     }
     for(auto tmp:jmpInstr)
         tmp.first->replaceJmptag(tmp.second->id);
+    std::cerr << "Linking over" << std::endl;
+    
     std::cout << id << std::endl;
     instr = program->front->next;
+    Instruction *pre;
     while(instr){
         instr->print();
+        pre = instr;
         instr = instr->next;
+        delete pre;
     }
+    delete program;
 }
