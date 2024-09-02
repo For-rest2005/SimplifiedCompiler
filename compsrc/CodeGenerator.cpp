@@ -83,6 +83,8 @@ inline void nodeConcatenateOptional(ASTNode *cur,Expression *next){
 
 void VariableExp::codeGenerate(){
     auto varinfo = varEnvir.getVar(name,globalBit);
+    if(varinfo.first = -1)
+        errorReport("Undefined name");
     dataType = varinfo.first;
     pushbackInstr(INSTR_SUB,RSP,CON1,RSP);
     if(globalBit){
@@ -96,6 +98,8 @@ void VariableExp::codeGenerate(){
 
 void VariableExp::codeGenerateOptional(){
     auto varinfo = varEnvir.getVar(name,globalBit);
+    if(varinfo.first = -1)
+        errorReport("Undefined name");
     dataType = varinfo.first;
     if(globalBit) stackPushConstant(this,varinfo.second);
     else{
@@ -109,6 +113,8 @@ void VariableExp::codeGenerateOptional(){
 void ArrayExp::codeGenerate(){
     nodeConcatenate(this,index);
     auto varinfo = varEnvir.getVar(name,globalBit);
+    if(varinfo.first = -1)
+        errorReport("Undefined name");
     if(varinfo.first == DATATYPE_INTPOINTER) 
         dataType = DATATYPE_INT;
     else errorReport("Invalid array expression");
@@ -133,6 +139,8 @@ void ArrayExp::codeGenerate(){
 void ArrayExp::codeGenerateOptional(){
     nodeConcatenate(this,index);
     auto varinfo = varEnvir.getVar(name,globalBit);
+    if(varinfo.first = -1)
+        errorReport("Undefined name");
     if(varinfo.first == DATATYPE_INTPOINTER) 
         dataType = DATATYPE_INT;
     else errorReport("Invalid array expression");
@@ -165,7 +173,6 @@ void ConstantExp::codeGenerate(){
         break;
     }
 }
-
 void UnaryOp::codeGenerate(){
     if(op == "+" || op == "-" || op == "!"){
         nodeConcatenate(this,first);
