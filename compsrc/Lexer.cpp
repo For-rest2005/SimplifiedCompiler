@@ -11,6 +11,10 @@ inline int charTypeGet(char ch){return _charType[int(ch)];}
 #define LETTER 4
 #define INVALID -1
 
+int lineNum;
+int charNum;
+std::string fileName;
+
 Token::Token(int __type,const std::string &__value):_type(__type),_value(__value){}
 const std::string Token::value(){return _value;}
 const int Token::type(){return _type;}
@@ -42,6 +46,9 @@ Token getStringConstant(){
 }
 
 static std::stack<Token> getTokenBuffer;
+
+void openFile(){}
+void exitFile(){}
 
 Token getToken(){
     if(!getTokenBuffer.empty()){
@@ -96,7 +103,7 @@ Token getToken(){
             ungetc(ch,stdin);
         }
     }else if(charTypeGet(ch) == INVALID){
-        errorReport("Invalid character");
+        errorReport("Invalid character"+ch);
     }
     return Token(type,buffer);
 }

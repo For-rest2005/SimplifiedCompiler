@@ -31,4 +31,8 @@ Token getToken();
 void skipTokens(int n = 1);
 void unGetToken(const Token&);
 
+void openFile();
+void exitFile();
+
+
 #endif

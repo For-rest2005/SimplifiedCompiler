@@ -24,9 +24,13 @@
 #define DATATYPE_INTPOINTER 2
 #define DATATYPE_STRINGCONSTANT 3
 
+extern int lineNum;
+extern int charNum;
+extern std::string fileName;
 
 inline void errorReport(const std::string& errorData){
-    std::cerr << "ERROR:" << errorData << std::endl;
+    std::cerr << "ERROR:At" << fileName << ' ' << "Line:" << lineNum << ' ' << charNum << "-th character" << std::endl
+    << errorData << std::endl;
     exit(1);
 }
 
